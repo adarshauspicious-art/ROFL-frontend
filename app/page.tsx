@@ -1,65 +1,170 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch("http://localhost:5000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log("Login Successful:", data);
+      // Optionally save token in localStorage if your backend returns JWT
+      localStorage.setItem("token", data.token);
+      // Redirect user or update state
+      alert("Login successful!");
+    } else {
+      console.error("Login Failed:", data.message);
+      alert(data.message || "Login failed");
+    }
+  } catch (error) {
+    console.error("Error logging in:", error);
+    alert("Something went wrong. Please try again.");
+  }
+
+  // Optionally reset form
+  setEmail("");
+  setPassword("");
+};
+
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="min-h-screen w-full flex bg-white">
+      {/* LEFT SIDE IMAGE */}
+      <div className="hidden md:block w-1/2 h-screen overflow-hidden rounded-r-[40px]">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+          src="/rofl emoji.svg"   // <— Place your image in /public/login.png
+          alt="Mascot"
+          width={1200}
+          height={1200}
+          className="object-cover h-full w-full"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </div>
+
+      {/* RIGHT SIDE LOGIN PANEL */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8">
+
+        {/* Top right support link */}
+        <div className="absolute top-6 right-10 text-sm text-gray-500">
+          Have Issues?{" "}
+          <Link href="#" className="underline">
+            Contact Support
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* LOGO */}
+        <div className="mb-6 text-center">
+          <Image
+            src="/rofl_img.png"   // Place your ROFL logo at /public/rofl-logo.png 
+            alt="ROFL Logo"
+            width={160}
+            height={80}
+          />
+
         </div>
-      </main>
+
+        {/* LOGIN CARD */}
+        <form className="space-y-4 border rounded-3xl border-gray-200 shadow-xl" onSubmit={handleSubmit}>
+          <div className="w-full max-w-md  rounded-3xl p-10">
+            <h1 className="login-title text-center text-sm ">
+              Login To Your <br /> Account
+            </h1>
+
+            <p className="mt-3 font-cabinet text-center text-gray-600 text-sm">
+              Sign in with email and password to securely access your account.
+            </p>
+
+            {/* EMAIL */}
+            <div className="mt-5 relative">
+
+              <input
+                type="email"
+                className=" mt-2 w-full border border-gray-300 pl-9 text-black rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D] "
+                placeholder="Email Address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Image
+                src="/mail.png"
+                alt="email_logo"
+                width={15}
+                height={10}
+                className="absolute top-6 left-3"
+
+              />
+
+            </div>
+
+            {/* PASSWORD */}
+            <div className="mt-4">
+              <div className="relative mt-2">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  className="w-full border border-gray-300 text-black rounded-xl px-4 py-3 pl-9  focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D]"
+                  placeholder="Password"
+                  
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Image
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute top-3.5 right-3 cursor-pointer"
+                  src={showPassword ? "/eyeOff.png" : "/eye.png"}
+                  alt="eye"
+                  width={20}
+                  height={20}
+                />
+
+                <Image
+                  src="/password_icon.png"
+                  alt="email_logo"
+                  width={18}
+                  height={10}
+                  className="absolute top-4 left-3"
+
+                />
+              </div>
+
+              <div className="text-right mt-2">
+                <Link href="#" className="text-sm text-gray-600 underline">
+                  Forgot Password?
+                </Link>
+              </div>
+            </div>
+
+            {/* LOGIN BUTTON */}
+            <button className="mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black]" type="submit">
+              Login <span>→</span>
+            </button>
+
+            {/* CREATE ACCOUNT */}
+            <p className="mt-5 text-center text-gray-700 text-sm">
+              Don’t have an account?{" "}
+              <Link href="#" className="underline font-medium">
+                Create One.
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
