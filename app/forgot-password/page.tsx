@@ -7,11 +7,39 @@ import { useRouter } from "next/navigation";
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false); // To track the loading state
+  const [error, setError] = useState(""); // To store error messages (if any)
+  const [success, setSuccess] = useState(false); // To track success state
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Email submitted:", email);
+    setLoading(true); // Set loading to true when submitting the form
+    setError(""); // Clear any previous error messages
+    setSuccess(false); // Reset success state
+
+    try {
+      const response = await fetch("http://localhost:5000/forget-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }), // Send email in the request body
+      });
+
+      if (response.ok) {
+        setSuccess(true); // If successful, set success to true
+        router.push("/forgot-password/verify"); // Navigate to verify page on success
+      } else {
+        const data = await response.json();
+        setError(data.message || "Something went wrong"); // Show error if response is not ok
+      }
+    } catch (err) {
+      setError("An error occurred while submitting the request.");
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
+
   return (
     <div className="min-h-screen w-full flex bg-white">
       {/* LEFT SIDE IMAGE */}
@@ -51,13 +79,10 @@ export default function ForgotPasswordPage() {
           onSubmit={handleSubmit}
         >
           <div className="w-full max-w-md  rounded-3xl p-10">
-            <h1 className="login-title text-center text-sm ">
-              Forgot Password?
-            </h1>
+            <h1 className="login-title text-center text-sm ">Forgot Password?</h1>
 
             <p className="mt-3 font-cabinet text-center text-gray-600 text-sm">
-              Reset your password by email link and set a
-              new one securely
+              Reset your password by email link and set a new one securely
             </p>
 
             {/* EMAIL */}
@@ -80,12 +105,24 @@ export default function ForgotPasswordPage() {
 
             {/* LOGIN BUTTON */}
             <button
-            onClick={() => router.push("/forgot-password/verify")}
+              disabled={loading} // Disable button when loading
               className="mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black]"
               type="submit"
             >
-              Verify Email <span>→</span>
+              {loading ? "Sending..." : "Verify Email"} <span>→</span>
             </button>
+
+            {/* Error message */}
+            {error && (
+              <div className="text-red-500 text-center mt-3">{error}</div>
+            )}
+
+            {/* Success message */}
+            {success && (
+              <div className="text-green-500 text-center mt-3">
+                Success! Check your email for the verification link.
+              </div>
+            )}
 
             {/* CREATE ACCOUNT */}
             <p className="mt-5 text-center text-gray-700 text-sm">

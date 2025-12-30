@@ -31,9 +31,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        
+
       <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-md text-center">
-        
+
         <h1 className="text-2xl font-bold mb-4 login-title">
           Welcome to Dashboard 🎉
         </h1>

@@ -7,17 +7,56 @@ import { useRouter } from "next/navigation";
 export default function VerifyPage() {
     const router = useRouter();
     const [otp, setOtp] = useState("");
+    const [loading, setLoading] = useState(false); // To show loading state
+    const [error, setError] = useState(""); // To capture any errors
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        console.log("OTP submitted:", otp);
-    };
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("OTP submitted:", otp);
+
+    setLoading(true);
+    setError(""); // Reset any previous errors
+
+    try {
+        // Make the API call to verify the OTP
+        const response = await fetch("http://localhost:5000/verify-otp", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ otp }), // Sending OTP in the request body
+        });
+
+        const data = await response.json();
+
+        // Log the full API response for debugging
+        console.log("API Response:", data);
+
+        if (response.ok) {
+            // If OTP verification is successful, redirect the user
+            console.log("OTP verified successfully:", data);
+            router.push("/forgot-password/reset"); // Navigate to the next page
+        } else {
+            // If OTP verification fails, show a more professional error message
+            setError("The provided OTP could not be verified. Please check and try again.");
+            console.log("Error during verification:", data.message || "Unknown error");
+        }
+    } catch (err) {
+        // Handle any network or API errors
+        setError("An error occurred while verifying the OTP. Please try again later.");
+        console.error("API Error:", err);
+    } finally {
+        setLoading(false);
+    }
+};
+
+
     return (
         <div className="min-h-screen w-full flex bg-white">
             {/* LEFT SIDE IMAGE */}
             <div className="hidden md:block w-1/2 h-screen overflow-hidden rounded-r-[40px]">
                 <Image
-                    src="/rofl emoji.svg" // <— Place your image in /public/login.png
+                    src="/rofl emoji.svg"
                     alt="Mascot"
                     width={1200}
                     height={1200}
@@ -38,7 +77,7 @@ export default function VerifyPage() {
                 {/* LOGO */}
                 <div className="mb-6 text-center">
                     <Image
-                        src="/rofl_img.png" // Place your ROFL logo at /public/rofl-logo.png
+                        src="/rofl_img.png"
                         alt="ROFL Logo"
                         width={160}
                         height={80}
@@ -51,32 +90,35 @@ export default function VerifyPage() {
                     onSubmit={handleSubmit}
                 >
                     <div className="w-full max-w-md  rounded-3xl p-10">
-                        <h1 className="login-title text-center text-sm ">
-                            Enter OTP
-                        </h1>
+                        <h1 className="login-title text-center text-sm ">Enter OTP</h1>
 
                         <p className="mt-3 font-cabinet text-center text-gray-600 text-sm">
                             Enter the one-time code sent to your registered email address
                         </p>
 
-                        {/* EMAIL */}
+                        {/* OTP INPUT */}
                         <div className="mt-5 relative">
                             <input
-                                type="otp"
-                                className=" mt-2 w-full border border-gray-300 pl-9 text-black rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D] "
+                                type="text" // Changed from otp to text to ensure correct input type
+                                className="mt-2 w-full border border-gray-300 pl-9 text-black rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D]"
                                 placeholder="Enter OTP"
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value)}
                             />
                         </div>
 
-                        {/* LOGIN BUTTON */}
+                        {/* Error Message */}
+                        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+
+                        {/* VERIFY BUTTON */}
                         <button
-                        onClick={() => router.push("/forgot-password/reset")}
-                            className="mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black]"
+                            className={`mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black] ${
+                                loading ? "cursor-not-allowed opacity-50" : ""
+                            }`}
                             type="submit"
+                            disabled={loading} // Disable button when loading
                         >
-                            Verify <span>→</span>
+                            {loading ? "Verifying..." : "Verify"} <span>→</span>
                         </button>
 
                         {/* CREATE ACCOUNT */}

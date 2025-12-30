@@ -55,7 +55,7 @@ export default function LoginPage() {
       {/* LEFT SIDE IMAGE */}
       <div className="hidden md:block w-1/2 h-screen overflow-hidden rounded-r-[40px]">
         <Image
-          src="/rofl emoji.svg" // <— Place your image in /public/login.png
+          src="/rofl emoji.svg" 
           alt="Mascot"
           width={1200}
           height={1200}
@@ -65,7 +65,7 @@ export default function LoginPage() {
 
       {/* RIGHT SIDE LOGIN PANEL */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8">
-        {/* Top right support link */}
+       
         <div className="absolute top-6 right-10 text-sm text-gray-500">
           Have Issues?{" "}
           <Link href="#" className="underline">
@@ -76,7 +76,7 @@ export default function LoginPage() {
         {/* LOGO */}
         <div className="mb-6 text-center">
           <Image
-            src="/rofl_img.png" // Place your ROFL logo at /public/rofl-logo.png
+            src="/rofl_img.png" 
             alt="ROFL Logo"
             width={160}
             height={80}
