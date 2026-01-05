@@ -78,7 +78,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/user_logo.png"
-                alt="Dashboard Icon"
+                alt="user Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -91,7 +91,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/items.svg"
-                alt="Dashboard Icon"
+                alt="items Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -104,7 +104,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/user_logo.png"
-                alt="Dashboard Icon"
+                alt="user Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -117,7 +117,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/winners.svg"
-                alt="Dashboard Icon"
+                alt="winners & Fulfillment Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -130,7 +130,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/gift.svg"
-                alt="Dashboard Icon"
+                alt="giveaway Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -143,7 +143,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/disputes.svg"
-                alt="Dashboard Icon"
+                alt="Disputes Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -156,7 +156,7 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/revenue.svg"
-                alt="Dashboard Icon"
+                alt="Revenue Overview Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
@@ -169,11 +169,24 @@ export default function DashboardPage() {
              hover:shadow-[3px_3px_0px_black]">
               <Image
                 src="/banners.svg"
-                alt="Dashboard Icon"
+                alt="Manage Banners Icon"
                 width={25}
                 height={25}
                 className=" top-6 left-3"
               />Manage Banners </li>
+            
+            <li className="mt-20 ml-2 w-full bg-white py-3 rounded-xl border-none 
+             font-normal text-black text-lg
+             flex items-center  gap-2
+             hover:text-white hover:bg-[#F2482D]
+             hover:shadow-[3px_3px_0px_black]" onClick={handleLogout}>
+              <Image
+                src="/logout.png"
+                alt="Logout Icon"
+                width={25}
+                height={25}
+                className=" top-6 left-3"
+              />Logout </li>
 
           </ul>
         </aside>
