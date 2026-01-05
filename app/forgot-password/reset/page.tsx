@@ -156,7 +156,7 @@ export default function ResetPage() {
             {/* Submit button */}
             <button
               type="submit"
-              disabled={!password || password !== confirmPassword || loading}
+                disabled={loading}
               className={`mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black] ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {loading ? "Saving..." : "Set Password"} <span>→</span>
