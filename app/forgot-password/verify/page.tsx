@@ -11,44 +11,40 @@ export default function VerifyPage() {
     const [error, setError] = useState(""); // To capture any errors
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("OTP submitted:", otp);
+  e.preventDefault();
 
-    setLoading(true);
-    setError(""); // Reset any previous errors
+  const email = localStorage.getItem("resetEmail");
 
-    try {
-        // Make the API call to verify the OTP
-        const response = await fetch("http://localhost:5000/verify-otp", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ otp }), // Sending OTP in the request body
-        });
+  if (!email) {
+    setError("Session expired. Please restart password recovery.");
+    return;
+  }
 
-        const data = await response.json();
+  setLoading(true);
+  setError("");
 
-        // Log the full API response for debugging
-        console.log("API Response:", data);
+  try {
+    const response = await fetch("http://localhost:5000/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
 
-        if (response.ok) {
-            // If OTP verification is successful, redirect the user
-            console.log("OTP verified successfully:", data);
-            router.push("/forgot-password/reset"); // Navigate to the next page
-        } else {
-            // If OTP verification fails, show a more professional error message
-            setError("The provided OTP could not be verified. Please check and try again.");
-            console.log("Error during verification:", data.message || "Unknown error");
-        }
-    } catch (err) {
-        // Handle any network or API errors
-        setError("An error occurred while verifying the OTP. Please try again later.");
-        console.error("API Error:", err);
-    } finally {
-        setLoading(false);
+    const data = await response.json();
+    console.log("API Response:", data);
+
+    if (response.ok) {
+      router.push("/forgot-password/reset");
+    } else {
+      setError(data.message || "Invalid OTP. Please try again.");
     }
+  } catch (err) {
+    setError("Network error. Please try again.");
+  } finally {
+    setLoading(false);
+  }
 };
+
 
 
     return (
