@@ -8,6 +8,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -91,6 +92,7 @@ export default function DashboardPage() {
               <li
                 key={i}
                 onClick={() => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                   item.route && router.push(item.route);
                   closeSidebar();
                 }}
@@ -128,13 +130,93 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex items-center justify-center transition-all duration-500 ${
-          !isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
-        }`}
+        className={`flex-1 flex  justify-center transition-all duration-500 ${!isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
+          }`}
       >
-        <div className="bg-white p-20 rounded-2xl shadow-lg w-full max-w-md text-center">
-          <h1 className="text-xl font-bold mb-4 login-title">Welcome to Dashboard 🎉</h1>
-          <p className=" text-gray-600">You are successfully logged in.</p>
+        <div className="w-full  ">
+          <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
+            {/* Left Title */}
+            <h1 className="text-3xl login-title">
+              Sellers
+            </h1>
+
+            {/* Right Section */}
+            <div className="flex items-center gap-4  ">
+              {/* Notification */}
+              <div className="h-15 w-15 flex items-center justify-center rounded-2xl bg-white border border-gray-200 p-2">
+                <Image
+                  src="/bell.png"
+                  alt="Notifications"
+                  width={70}
+                  height={70}
+                />
+              </div>
+
+              {/* Profile */}
+              <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-8 py-3">
+                <Image
+                  src={"/Avatar.png"}
+                  alt="Profile Avatar"
+                  width={40}
+                  height={40}
+                />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-gray-800">
+                    Arisu Anama
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Administrator
+                    <Image
+                      src="/down_icon.png"
+                      alt="Dropdown Arrow"
+                      width={15}
+                      height={15}
+                      className="cursor-pointer mr-4 inline-block"
+                    />
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+ 
+        {/* Filter and Search Section */}
+
+          <div className="w-full w-full inline-flex   gap-6">
+            <div className="w-full inline-flex   gap-6">
+            <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+              onClick={() => { console.log("button clicked") }}>
+              Active Sellers
+            </button>
+
+            <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+              onClick={() => { console.log("button clicked") }}>
+              Pending Approval
+            </button>
+
+            <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+              onClick={() => { console.log("button clicked") }}>
+              Blocked Sellers
+            </button>
+          </div>
+
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search "
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="mt-4 w-50 px-5 border rounded-xl   border-gray-400 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+            />
+            <Image
+              src="/search.png"
+              alt="Search Icon"
+              width={50}
+              height={50}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+          </div>
+          </div>
+
         </div>
       </div>
     </div>
