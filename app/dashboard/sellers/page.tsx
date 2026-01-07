@@ -179,42 +179,53 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
- 
-        {/* Filter and Search Section */}
+
+          {/* Filter and Search Section */}
 
           <div className="w-full w-full inline-flex   gap-6">
             <div className="w-full inline-flex   gap-6">
-            <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-              onClick={() => { console.log("button clicked") }}>
-              Active Sellers
-            </button>
+              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => { console.log("button clicked") }}>
+                Active Sellers
+              </button>
 
-            <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-              onClick={() => { console.log("button clicked") }}>
-              Pending Approval
-            </button>
+              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => { console.log("button clicked") }}>
+                Pending Approval
+              </button>
 
-            <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-              onClick={() => { console.log("button clicked") }}>
-              Blocked Sellers
-            </button>
-          </div>
+              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => { console.log("button clicked") }}>
+                Blocked Sellers
+              </button>
+            </div>
 
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search "
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="mt-4 w-50 px-5 border rounded-xl   border-gray-400 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-            />
-            <Image
-              src="/search.png"
-              alt="Search Icon"
-              width={50}
-              height={50}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-          </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search "
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="mt-4 h-15 mr-15 w-50 px-5 border rounded-xl   border-gray-400 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
+              <Image
+                src="/search.png"
+                alt="Search Icon"
+                width={50}
+                height={50}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+            </div>
+
+            <form
+              action="http://localhost:3000/upload"
+              method="POST"
+              encType="multipart/form-data"
+              className="text-black border border-gray-400 p-4 rounded-xl"
+            >
+              <input type="file" name="image" />
+              <br /><br />
+              <button type="submit" className="border border-gray-400 w-50 h-15">Upload</button>
+            </form>
           </div>
 
         </div>
