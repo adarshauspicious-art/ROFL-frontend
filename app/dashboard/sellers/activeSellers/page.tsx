@@ -80,7 +80,7 @@ export default function DashboardPage() {
           <ul className="mt-4 space-y-2">
             {[
               { label: "Dashboard", icon: "/dashboard.png", route: "/dashboard" },
-              { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/sellers" },
+              { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/sellers/activeSellers"  },
               { label: "Items", icon: "/items.svg" },
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
@@ -182,8 +182,8 @@ export default function DashboardPage() {
 
           {/* Filter and Search Section */}
 
-          <div className="w-full w-full inline-flex   gap-6">
-            <div className="w-full inline-flex   gap-6">
+          <div className="w-full w-full inline-flex gap-6">
+            <div className="w-full inline-flex gap-6 ml-5 h-20 ">
               <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
                 onClick={() => { console.log("button clicked") }}>
                 Active Sellers
@@ -200,33 +200,88 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="relative">
+
+            <div className="relative mt-4 mr-5 w-max-full ">
+              {/* Search Icon */}
               <input
                 type="text"
-                placeholder="Search "
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="mt-4 h-15 mr-15 w-50 px-5 border rounded-xl   border-gray-400 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                placeholder="Search Sellers..."
+                className="w-full rounded-xl border border-gray-300 
+               py-3 pl-12 pr- text-sm text-black
+               focus:outline-none focus:ring-2 focus:ring-gray-300
+               transition"
               />
-              <Image
-                src="/search.png"
-                alt="Search Icon"
-                width={50}
-                height={50}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              <div className="pointer-events-none absolute inset-y-0 left-1 flex items-center">
+                <Image
+                  src="/search.png"
+                  alt="Search Icon"
+                  width={40}
+                  height={28}
+                  className=""
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sellers List Section */}
+
+          <div className="w-full bg-white mt-10 rounded-xl shadow-md p-6">
+
+            {/* Table Header */}
+            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+              <p>Sr No.</p>
+              <p>Seller Name</p>
+              <p>Email</p>
+              <p>Joined</p>
+              <p>Items Listed</p>
+              <p>Time Line</p>
+              <p className="text-center">Action</p>
             </div>
 
-            <form
-              action="http://localhost:3000/upload"
-              method="POST"
-              encType="multipart/form-data"
-              className="text-black border border-gray-400 p-4 rounded-xl"
-            >
-              <input type="file" name="image" />
-              <br /><br />
-              <button type="submit" className="border border-gray-400 w-50 h-15">Upload</button>
-            </form>
+            {/* Table Rows */}
+            <div className="mt-3">
+
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-7 px-5 py-4 text-sm text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                >
+                  <p>12345</p>
+                  <p>Name of Item</p>
+                  <p>jan24@example.com</p>
+                  <p>January 24, 2025</p>
+                  <p>34</p>
+                  <p>7 days</p>
+
+                  <div className="flex justify-center">
+                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md">
+                      👁
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
+              <p>Page 1 of 10</p>
+
+              <div className="flex gap-3">
+                <button className="border px-4 py-2 rounded-md">
+                  Previous
+                </button>
+                <button className="border px-4 py-2 rounded-md font-semibold">
+                  Next
+                </button>
+              </div>
+            </div>
+
           </div>
+
+
 
         </div>
       </div>

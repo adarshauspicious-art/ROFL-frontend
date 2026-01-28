@@ -78,8 +78,8 @@ export default function DashboardPage() {
           {/* Menu */}
           <ul className="mt-4 space-y-2">
             {[
-              { label: "Dashboard", icon: "/dashboard.png", route: "/dashboard" },
-              { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/sellers/activeSellers" },
+              { label: "Dashboard", icon: "/dashboard.png", route: "/dashboard/Dashboard" },
+              { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/activeSellers" },
               { label: "Items", icon: "/items.svg" },
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
