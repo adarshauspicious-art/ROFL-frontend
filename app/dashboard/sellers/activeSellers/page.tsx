@@ -190,7 +190,7 @@ export default function DashboardPage() {
               </button>
 
               <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => { console.log("button clicked") }}>
+                onClick={() => router.push("/dashboard/sellers/pendingApprovels")}>
                 Pending Approval
               </button>
 
