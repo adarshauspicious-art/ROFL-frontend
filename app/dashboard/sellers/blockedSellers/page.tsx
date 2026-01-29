@@ -8,6 +8,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -91,6 +92,7 @@ export default function DashboardPage() {
               <li
                 key={i}
                 onClick={() => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                   item.route && router.push(item.route);
                   closeSidebar();
                 }}
@@ -128,13 +130,161 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex items-center justify-center transition-all duration-500 ${
-          !isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
-        }`}
+        className={`flex-1 flex  justify-center transition-all duration-500 ${!isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
+          }`}
       >
-        <div className="bg-white p-20 rounded-2xl shadow-lg w-full max-w-md text-center">
-          <h1 className="text-xl font-bold mb-4 login-title">Welcome to Dashboard 🎉</h1>
-          <p className=" text-gray-600">You are successfully logged in.</p>
+        <div className="w-full  ">
+          <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
+            {/* Left Title */}
+            <h1 className="text-3xl login-title">
+              Sellers
+            </h1>
+
+            {/* Right Section */}
+            <div className="flex items-center gap-4  ">
+              {/* Notification */}
+              <div className="h-15 w-15 flex items-center justify-center rounded-2xl bg-white border border-gray-200 p-2">
+                <Image
+                  src="/bell.png"
+                  alt="Notifications"
+                  width={70}
+                  height={70}
+                />
+              </div>
+
+              {/* Profile */}
+              <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-8 py-3">
+                <Image
+                  src={"/Avatar.png"}
+                  alt="Profile Avatar"
+                  width={40}
+                  height={40}
+                />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-gray-800">
+                    Arisu Anama
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Administrator
+                    <Image
+                      src="/down_icon.png"
+                      alt="Dropdown Arrow"
+                      width={15}
+                      height={15}
+                      className="cursor-pointer mr-4 inline-block"
+                    />
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          {/* Filter and Search Section */}
+
+          <div className="w-full w-full inline-flex gap-6">
+            <div className="w-full inline-flex gap-6 ml-5 h-20 ">
+              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/dashboard/sellers/activeSellers")}>
+                Active Sellers
+              </button>
+
+              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/dashboard/sellers/pendingApprovels")}>
+                Pending Approval
+              </button>
+
+              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/dashboard/sellers/blockedSellers")}>
+                Blocked Sellers
+              </button>
+            </div>
+
+
+            <div className="relative mt-4 mr-5 w-max-full ">
+              {/* Search Icon */}
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search Sellers..."
+                className="w-full rounded-xl border border-gray-300 
+               py-3 pl-12 pr- text-sm text-black
+               focus:outline-none focus:ring-2 focus:ring-gray-300
+               transition"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-1 flex items-center">
+                <Image
+                  src="/search.png"
+                  alt="Search Icon"
+                  width={40}
+                  height={28}
+                  className=""
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sellers List Section */}
+
+          <div className="w-full bg-white mt-10 rounded-xl shadow-md p-6">
+
+            {/* Table Header */}
+            <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+              
+              <p>Seller Name</p>
+              <p>Email</p>
+              <p>Blocked On</p>
+              <p>Admin Notes</p>
+              
+              <p className="text-center ">Action</p>
+            </div>
+
+            {/* Table Rows */}
+            <div className="mt-3">
+
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-5 px-5 py-4 text-sm text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                >
+                  
+                  <p>Name of Item</p>
+                  <p>jan24@example.com</p>
+                  <p>January 24, 2025</p>
+                  <p>Inappropriate content and policy violations reported here</p>
+                  
+                  
+
+                  <div className="flex justify-center gap-5">
+                    <p className="underline text-blue-500"> Unblock </p>
+                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("blockedSellers/blockedDetails")}>
+                      👁
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
+              <p>Page 1 of 10</p>
+
+              <div className="flex gap-3">
+                <button className="border px-4 py-2 rounded-md">
+                  Previous
+                </button>
+                <button className="border px-4 py-2 rounded-md font-semibold">
+                  Next
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+
+
         </div>
       </div>
     </div>

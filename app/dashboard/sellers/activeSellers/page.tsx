@@ -185,7 +185,7 @@ export default function DashboardPage() {
           <div className="w-full w-full inline-flex gap-6">
             <div className="w-full inline-flex gap-6 ml-5 h-20 ">
               <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => { console.log("button clicked") }}>
+                onClick={() => router.push("/dashboard/sellers/activeSellers")}>
                 Active Sellers
               </button>
 
@@ -195,7 +195,7 @@ export default function DashboardPage() {
               </button>
 
               <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => { console.log("button clicked") }}>
+                onClick={() => router.push("/dashboard/sellers/blockedSellers")}>
                 Blocked Sellers
               </button>
             </div>
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   <p>7 days</p>
 
                   <div className="flex justify-center">
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md">
+                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("activeSellers/activeDetail")}>
                       👁
                     </button>
                   </div>
