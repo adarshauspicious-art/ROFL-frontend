@@ -80,7 +80,7 @@ export default function DashboardPage() {
             {[
               { label: "Dashboard", icon: "/dashboard.png", route: "/dashboard" },
               { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/sellers/activeSellers" },
-              { label: "Items", icon: "/items.svg" },
+              { label: "Items", icon: "/items.svg" , route: "/dashboard/Items"},
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
               { label: "Weekly Giveaway", icon: "/gift.svg" },

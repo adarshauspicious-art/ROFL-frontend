@@ -81,7 +81,7 @@ export default function DashboardPage() {
             {[
               { label: "Dashboard", icon: "/dashboard.png", route: "/dashboard" },
               { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/sellers/activeSellers"  },
-              { label: "Items", icon: "/items.svg" },
+              { label: "Items", icon: "/items.svg", route: "/dashboard/Items" },
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
               { label: "Weekly Giveaway", icon: "/gift.svg" },
@@ -257,7 +257,7 @@ export default function DashboardPage() {
                   
 
                   <div className="flex justify-center gap-5">
-                    <p className="underline text-blue-500"> Unblock </p>
+                    <p className="underline text-blue-500 "> Unblock </p>
                     <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("blockedSellers/blockedDetails")}>
                       👁
                     </button>

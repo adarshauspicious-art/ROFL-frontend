@@ -92,7 +92,7 @@ export default function DashboardPage() {
                 icon: "/user_logo.png",
                 route: "/dashboard/sellers/activeSellers",
               },
-              { label: "Items", icon: "/items.svg" },
+              { label: "Items", icon: "/items.svg" , route: "/dashboard/Items" },
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
               { label: "Weekly Giveaway", icon: "/gift.svg" },
@@ -209,31 +209,49 @@ export default function DashboardPage() {
                   className="rounded-xl object-cover w-full sm:w-[250px]"
                 />
                 <div className="flex-1">
-                  <div className="flex flex-col sm:flex-row justify-between gap-4">
+                  {/* Top section */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ">
                     <h2 className="text-xl font-bold login-title">
                       Alexander Thompson
                     </h2>
+
                     <button className="px-6 py-3 text-white bg-black rounded-lg shadow-[3px_3px_0px_#000000]">
-                       Seller Blocked
+                      Seller Blocked
                     </button>
                   </div>
 
-                  <div className="mt-4 space-y-3 text-sm sm:text-lg">
+                  {/* Info section */}
+                  <div className="mt-5 text-lg space-y-6 leading-relaxed">
                     <p>
-                      <span className="font-bold text-gray-500">
-                        Email Address:
-                      </span>{" "}
-                      thomalex@draftmail.com
+                      <span className="block font-bold text-gray-500">
+                        Reason to Block:
+                      </span>
+                      Too many disputes against this seller
                     </p>
+
+                    {/* Email + Phone side by side */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <p>
+                        <span className="block font-bold text-gray-500">
+                          Email Address:
+                        </span>
+                        thomas@redmiffl.com
+                      </p>
+
+                      <p>
+                        <span className="block font-bold text-gray-500">
+                          Phone Number:
+                        </span>
+                        +1547 458 7856
+                      </p>
+                    </div>
+
+                    {/* Address full width */}
                     <p>
-                      <span className="font-bold text-gray-500">
-                        Phone Number:
-                      </span>{" "}
-                      +1547 458 7856
-                    </p>
-                    <p>
-                      <span className="font-bold text-gray-500">Address:</span>{" "}
-                      1234 Grandiose Ave, Apt 7
+                      <span className="block font-bold text-gray-500">
+                        Address:
+                      </span>
+                      1234 Grandiose Ave, Apt 7, Port Washington NY 10022
                     </p>
                   </div>
                 </div>
@@ -259,6 +277,21 @@ export default function DashboardPage() {
                   <p className="text-gray-500">Disputes</p>
                   <p className="font-bold">31</p>
                 </div>
+              </div>
+              <h3 className="font-semibold login-title mb-3">
+                Identity Proofs
+              </h3>
+
+              <div className="flex gap-5 text-gray-700">
+                <span className="px-4 py-2 text-sm rounded-lg bg-[#FFF5F2] border border-gray-400">
+                  ID Front
+                </span>
+                <span className="px-4 py-2 text-sm rounded-lg bg-[#FFF5F2] border border-gray-400">
+                  ID Back
+                </span>
+                <span className="px-4 py-2 text-sm rounded-lg bg-[#FFF5F2] border border-gray-400">
+                  Selfie
+                </span>
               </div>
             </div>
           </div>

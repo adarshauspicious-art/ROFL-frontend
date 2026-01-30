@@ -92,7 +92,7 @@ export default function DashboardPage() {
                 icon: "/user_logo.png",
                 route: "/dashboard/sellers/activeSellers",
               },
-              { label: "Items", icon: "/items.svg" },
+              { label: "Items", icon: "/items.svg", route: "/dashboard/Items" },
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
               { label: "Weekly Giveaway", icon: "/gift.svg" },
@@ -198,77 +198,75 @@ export default function DashboardPage() {
           </div>
 
           {/*User  Detail Section */}
-
-          {/* USER DETAILS + STATS */}
-          <div className="grid grid-cols-15 gap-30 mt-8 px-6 py-1 ">
-            {/* USER DETAILS CARD */}
-            <div className="col-span-10 bg-white rounded-xl p-15 shadow">
-              <div className="flex gap-15">
-                {/* Profile Image */}
+          <div className="grid grid-cols-1 lg:grid-cols-15 gap-6 mt-8 px-2 sm:px-6 text-black">
+            <div className="lg:col-span-10 bg-white rounded-xl p-4 sm:p-6 shadow">
+              <div className="flex flex-col sm:flex-row gap-6">
                 <Image
                   src="/userImg.png"
                   alt="User"
                   width={250}
                   height={180}
-                  className="rounded-xl object-cover"
+                  className="rounded-xl h-75 object-cover w-full sm:w-[250px]"
+                   sizes="(max-width: 640px) 100vw, 250px"
                 />
-
-                {/* Info */}
                 <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <h2 className="text-xl mt-5 font-bold login-title">
+                  {/* Top section */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ">
+                    <h2 className="text-xl font-bold login-title">
                       Alexander Thompson
                     </h2>
 
-                    <button className="px-8 py-3  border-none bg-black rounded-lg hover:bg-gray-800 shadow-[3px_3px_0px_#000000]">
+                    <button className="px-6 py-3 text-white bg-black rounded-lg shadow-[3px_3px_0px_#000000]" onClick={()=>console.log("Seller Blocked")}>
                       Block Seller
                     </button>
                   </div>
 
-                  <div className="gap-y-4 gap-x-10 mt-4 py-5 text-lg text-gray-700">
+                  {/* Info section */}
+                  <div className="mt-5 text-lg space-y-6 leading-relaxed">
+                    
+
+                    {/* Email + Phone side by side */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <p>
+                        <span className="block font-bold text-gray-500">
+                          Email Address:
+                        </span>
+                        thomas@redmiffl.com
+                      </p>
+
+                      <p>
+                        <span className="block font-bold text-gray-500">
+                          Phone Number:
+                        </span>
+                        +1547 458 7856
+                      </p>
+                    </div>
+
+                    {/* Address full width */}
                     <p>
-                      <span className="text-xl font-bold text-gray-500">
-                        Email Address:
+                      <span className="block font-bold text-gray-500">
+                        Address:
                       </span>
-                      <span className="text-lg text-black">
-                        {" "}
-                        thomalex@draftmail.com
-                      </span>
-                    </p>
-                    <p>
-                      <span className="text-gray-500 py-5 font-bold">
-                        Phone Number:
-                      </span>
-                      <span className="text-black"> +1547 458 7856</span>
-                    </p>
-                    <p className="col-span-2">
-                      <span className="text-gray-500 font-bold">Address:</span>
-                      <span className="text-black">
-                        {" "}
-                        1234 Grandiose Ave, Apt 7, Port Washington NY 10022
-                      </span>
+                      1234 Grandiose Ave, Apt 7, Port Washington NY 10022
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* STATS + IDENTITY */}
-            <div className="col-span-4 bg-white rounded-xl p-6 shadow">
-              {/* Stats */}
+            <div className="lg:col-span-4 bg-white rounded-xl p-6 shadow">
               <h3 className="font-semibold login-title mb-4">Stats</h3>
-
-              <div className="grid grid-cols-2 gap-5 text-black mb-5">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-gray-500">Live Items</p>
-                  <p className="font-bold text-black">24</p>
+                  <p className="font-bold">24</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Total Items Listed</p>
+                  <p className="text-gray-500">Total Items</p>
                   <p className="font-bold">520</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Total Revenue Generated</p>
+                  <p className="text-gray-500">Revenue</p>
                   <p className="font-bold">$25,482.45</p>
                 </div>
                 <div>
@@ -276,8 +274,6 @@ export default function DashboardPage() {
                   <p className="font-bold">31</p>
                 </div>
               </div>
-
-              {/* Identity Proofs */}
               <h3 className="font-semibold login-title mb-3">
                 Identity Proofs
               </h3>
@@ -296,11 +292,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-            {/* Active Sellers Table */}
+          {/* Active Sellers Table */}
           <div className="w-full bg-white mt-10 rounded-xl shadow-md py-6 px-6">
             <p className="login-title ">Items</p>
             {/* Table Header */}
-            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700 mt-5">
+            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg  font-semibold text-gray-700 mt-5">
               <p>Sr No.</p>
               <p>Item Name</p>
               <p>FMV</p>
@@ -312,31 +308,36 @@ export default function DashboardPage() {
 
             {/* Table Rows */}
             <div className="mt-3">
-
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-7 px-5 py-4 text-sm text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                  className="grid grid-cols-7 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                 >
                   <p>12345</p>
                   <p>Name of Item</p>
                   <p>$8,900</p>
                   <p>$50</p>
-                  <p>Pending</p>
+                  <p className="w-30 flex items-center justify-center py-2 rounded-3xl text-gray-800 bg-yellow-200">
+                    Sold Out
+                  </p>
                   <p>7 days</p>
 
                   <div className="flex justify-center">
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("/sellers/activeSellers/activeDetail")}>
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md"
+                      onClick={() =>
+                        router.push("/activeSellers/activeDetail")
+                      }
+                    >
                       👁
                     </button>
                   </div>
                 </div>
               ))}
-
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
+            <div className="flex justify-between items-center mt-6  text-gray-500">
               <p>Page 1 of 10</p>
 
               <div className="flex gap-3">
@@ -348,7 +349,6 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       </div>
