@@ -22,11 +22,14 @@ export default function DashboardPage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const toggleSidebar = () => setIsOpen(prev => !prev);
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
   const closeSidebar = () => isMobile && setIsOpen(false);
 
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/logout", { method: "POST", credentials: "include" });
+    await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
     localStorage.removeItem("token");
     router.push("/login");
   };
@@ -45,17 +48,17 @@ export default function DashboardPage() {
       <div
         className={`fixed top-0 left-0 h-screen bg-white p-2 shadow-lg rounded-r-2xl border border-gray-300 z-50
         transition-transform duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)]
-        ${isMobile
+        ${
+          isMobile
             ? isOpen
               ? "translate-x-0 w-[280px]"
               : "-translate-x-full w-[280px]"
             : isOpen
               ? "translate-x-0 w-[300px]"
               : "translate-x-0 w-[80px]"
-          }`}
+        }`}
       >
         <aside className="relative text-black">
-
           {/* Header */}
           <div className="flex items-center justify-between mb-6 mt-2 mr-2">
             <Image
@@ -79,9 +82,17 @@ export default function DashboardPage() {
           {/* Menu */}
           <ul className="mt-4 space-y-2">
             {[
-              { label: "Dashboard", icon: "/dashboard.png", route: "/dashboard" },
-              { label: "Sellers", icon: "/user_logo.png", route: "/dashboard/sellers/activeSellers"  },
-              { label: "Items", icon: "/items.svg" ,route : "/dashboard/Items"},
+              {
+                label: "Dashboard",
+                icon: "/dashboard.png",
+                route: "/dashboard",
+              },
+              {
+                label: "Sellers",
+                icon: "/user_logo.png",
+                route: "/dashboard/sellers/activeSellers",
+              },
+              { label: "Items", icon: "/items.svg", route: "/dashboard/Items" },
               { label: "Users", icon: "/user_logo.png" },
               { label: "Winners & Fulfillment", icon: "/winners.svg" },
               { label: "Weekly Giveaway", icon: "/gift.svg" },
@@ -101,8 +112,15 @@ export default function DashboardPage() {
                 hover:shadow-[3px_3px_0px_black]
                 ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
               >
-                <Image src={item.icon} alt={item.label} width={25} height={25} />
-                <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+                <Image
+                  src={item.icon}
+                  alt={item.label}
+                  width={25}
+                  height={25}
+                />
+                <span
+                  className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+                >
                   {item.label}
                 </span>
               </li>
@@ -119,26 +137,26 @@ export default function DashboardPage() {
               ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
             >
               <Image src="/logout.png" alt="Logout" width={25} height={25} />
-              <span className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+              <span
+                className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+              >
                 Logout
               </span>
             </li>
           </ul>
-
         </aside>
       </div>
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex  justify-center transition-all duration-500 ${!isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
-          }`}
+        className={`flex-1 flex  justify-center transition-all duration-500 ${
+          !isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
+        }`}
       >
         <div className="w-full  ">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">
-              Sellers
-            </h1>
+            <h1 className="text-3xl login-title">Sellers</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -175,7 +193,6 @@ export default function DashboardPage() {
                     />
                   </p>
                 </div>
-
               </div>
             </div>
           </div>
@@ -184,22 +201,29 @@ export default function DashboardPage() {
 
           <div className="w-full w-full inline-flex gap-6">
             <div className="w-full inline-flex gap-6 ml-5 h-20 ">
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/dashboard/sellers/activeSellers")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/dashboard/sellers/activeSellers")}
+              >
                 Active Sellers
               </button>
 
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/dashboard/sellers/pendingApprovels")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() =>
+                  router.push("/dashboard/sellers/pendingApprovels")
+                }
+              >
                 Pending Approval
               </button>
 
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/dashboard/sellers/blockedSellers")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/dashboard/sellers/blockedSellers")}
+              >
                 Blocked Sellers
               </button>
             </div>
-
 
             <div className="relative mt-4 mr-5 w-max-full ">
               {/* Search Icon */}
@@ -228,7 +252,6 @@ export default function DashboardPage() {
           {/* Sellers List Section */}
 
           <div className="w-full bg-white mt-10 rounded-xl shadow-md p-6">
-
             {/* Table Header */}
             <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
               <p>Sr No.</p>
@@ -242,7 +265,6 @@ export default function DashboardPage() {
 
             {/* Table Rows */}
             <div className="mt-3">
-
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
                 <div
                   key={index}
@@ -256,13 +278,15 @@ export default function DashboardPage() {
                   <p>7 days</p>
 
                   <div className="flex justify-center">
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("activeSellers/activeDetail")}>
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md"
+                      onClick={() => router.push("activeSellers/activeDetail")}
+                    >
                       👁
                     </button>
                   </div>
                 </div>
               ))}
-
             </div>
 
             {/* Pagination */}
@@ -278,11 +302,7 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
-
           </div>
-
-
-
         </div>
       </div>
     </div>

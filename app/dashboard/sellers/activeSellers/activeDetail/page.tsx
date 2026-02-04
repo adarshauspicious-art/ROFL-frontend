@@ -344,7 +344,7 @@ export default function DashboardPage() {
                 <button className="border px-4 py-2 rounded-md">
                   Previous
                 </button>
-                <button className="border px-4 py-2 rounded-md font-semibold">
+                <button className="border px-4 py-2 rounded-xl font-semibold">
                   Next
                 </button>
               </div>

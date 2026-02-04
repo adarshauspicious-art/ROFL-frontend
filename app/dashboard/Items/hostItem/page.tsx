@@ -8,8 +8,9 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [query, setQuery] = useState("");
+  const [itemImages, setItemImages] = useState([]);
 
+    
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -24,6 +25,7 @@ export default function DashboardPage() {
 
   const toggleSidebar = () => setIsOpen((prev) => !prev);
   const closeSidebar = () => isMobile && setIsOpen(false);
+  
 
   const handleLogout = async () => {
     await fetch("http://localhost:5000/logout", {
@@ -55,7 +57,7 @@ export default function DashboardPage() {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Items</h1>
+            <h1 className="text-3xl login-title">Host Item</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -97,51 +99,6 @@ export default function DashboardPage() {
           </div>
 
           {/* Filter and Search Section */}
-
-          <div className="w-full inline-flex gap-6">
-            <div className="inline-flex w-fit gap-6 ml-5 h-20">
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                All Items
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Live
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Pending
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Completed
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Sold Out
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Expired
-              </button>
-            </div>
-
-            <div className=" mt-4 mr-1 w-max-full ">
-              {/* Search Icon */}
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search Sellers..."
-                className=" rounded-xl border border-gray-300 ml-105 
-               py-3 pl-12 text-lg text-black
-               focus:outline-none focus:ring-2 focus:ring-gray-300
-               transition"
-              />
-            </div>
-            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/dashboard/Items/hostItem')}>
-              Host Item
-            </button>
-          </div>
 
           {/* Sidebar */}
           <div
@@ -254,78 +211,45 @@ export default function DashboardPage() {
             </aside>
           </div>
 
-          {/* Sellers List Section */}
+          {/* ================= FORM ================= */}
+          <div className="bg-white rounded-xl shadow p-5 shadow text-gray-800 mt-6">
+            <h2 className="text-lg font-semibold mb-4">Basic Details</h2>
 
-          <div className="w-full px-6 bg-white mt-10 rounded-xl shadow-md p-6">
-            {/* Table Header */}
-            <div className="grid grid-cols-9 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-              <p>Item ID</p>
-              <p>Item Name</p>
-              <p>Seller Name</p>
-              <p>FMV</p>
-              <p>Ticket Price</p>
-              <p>Slots Filled</p>
-              <p>Time Left</p>
-              <p>Status</p>
-              <p className="text-center">Action</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-7 ">
+              <input
+                placeholder="Item Title"
+                className="border rounded-lg p-3 border border-gray-300"
+              />
+
+              <select className="border rounded-lg p-4 border border-gray-300"><span><p>Select Category</p></span>
+                <option>Select Category1</option>
+                <option>Select Category2</option>
+                <option>Select Category3</option>
+                <option>Select Category4</option>
+                <option>Select Category5</option>
+              </select>
+
+              <input
+                placeholder="Desired Net Payout"
+                className="border rounded-lg p-4 border border-gray-300"
+              />
+
+              <select className="border rounded-lg p-3 border border-gray-300">
+                <option>Select Timeline1</option>
+                <option>Select Timeline2</option>
+                <option>Select Timeline3</option>
+                <option>Select Timeline4</option>
+                <option>Select Timeline5</option>
+              </select>
             </div>
 
-            {/* Table Rows */}
-            <div className="mt-3">
-              {[
-                { id: 1, status: "Pending" },
-                { id: 2, status: "Live" },
-                { id: 3, status: "Sold Out" },
-                { id: 4, status: "Pending" },
-                { id: 5, status: "Completed" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-                { id: 5, status: "Sold Out" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-              ].map((item, index) => {
-                // Map status to Tailwind CSS classes
-                const statusStyles = {
-                  Pending: "bg-yellow-200 text-yellow-800",
-                  Live: "bg-green-200 text-green-800",
-                  "Sold Out": "bg-red-200 text-red-800",
-                  Completed: "bg-[#E6F1FE] text-red-600",
-                  Expired: "bg-[#F3E8FF] text-gray-800",
-                };
+            <textarea
+              placeholder="Description"
+              className="border rounded-lg p-3 w-full mt-4 border border-gray-300 "
+              rows={4}
+            />
 
-                return (
-                  <div
-                    key={index}
-                    className="grid grid-cols-9 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
-                  >
-                    <p>12345</p>
-                    <p>Name of Item</p>
-                    <p>Kaeal Smith</p>
-                    <p>$5,220</p>
-                    <p>$34</p>
-                    <p>12/20</p>
-                    <p>6 days</p>
-                    <p
-                      className={`w-30 flex items-center justify-center py-2 rounded-3xl ${statusStyles[item.status]}`}
-                    >
-                      {item.status}
-                    </p>
-
-                    <div className="flex justify-center">
-                      <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md"
-                        onClick={() =>
-                          router.push("activeSellers/activeDetail")
-                        }
-                      >
-                        👁
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
+            {/* Image Upload */}
             <form
               action="http://localhost:5000/upload"
               method="post"
@@ -348,20 +272,13 @@ export default function DashboardPage() {
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
               >
                 Upload
-              </button>
+              </button> 
             </form>
 
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
-              <p>Page 1 of 10</p>
-              <div className="flex gap-3">
-                <button className="border px-4 py-2 border rounded-xl shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                  Previous
-                </button>
-                <button className="border px-4 py-2 border rounded-xl font-semibold shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                  Next
-                </button>
-              </div>
+            <div className="flex justify-end mt-6">
+              <button className="bg-[#F2482D]  hover:bg-[#F2482D] shadow-[3px_3px_0px_black] hover:text-white hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg">
+                Next →
+              </button>
             </div>
           </div>
         </div>
