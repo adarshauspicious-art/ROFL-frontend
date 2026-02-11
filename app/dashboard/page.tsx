@@ -133,7 +133,7 @@ export default function DashboardPage() {
         }`}
       >
         <div className="bg-white p-20 rounded-2xl shadow-lg w-full max-w-md text-center">
-          <h1 className="text-xl font-bold mb-4 login-title">Welcome to Dashboard 🎉</h1>
+          <h1 className="text-xl font-bold mb-4 login-title">Welcome to ROFL Dashboard 🎉</h1>
           <p className=" text-gray-600">You are successfully logged in.</p>
         </div>
       </div>
