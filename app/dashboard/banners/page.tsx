@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function DashboardPage() {
+export default function ProfileImage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [query, setQuery] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -34,6 +35,49 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
+  const handleProfileImageUpload = async () => {
+    if (!file) return alert("Please select an image");
+
+    const token = localStorage.getItem("token");
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("http://localhost:5000/user/profile-image", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }); 
+  };
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:5000/user/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (data.profileImage?.url) {
+          setSelectedImage(data.profileImage.url); // 🔥 permanent image
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile image", err);
+      }
+    };
+
+    fetchProfileImage();
+  }, []);
+
+  
+
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
       {/* Overlay for mobile */}
@@ -55,7 +99,7 @@ export default function DashboardPage() {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Disputes</h1>
+            <h1 className="text-3xl login-title">Manage Banners</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -96,52 +140,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-            <div className="flex flex-row gap-20">
-                <div className="w-120 h-32 px-6 bg-white mt-4 rounded-xl shadow-md p-6 ml-5">
-                    <h4 className="text-black font-bold text-lg">Dispute This Week</h4>
-                    <h6 className="text-orange-600 font-bold text-lg mt-5" >12</h6>
-                </div>
-                <div className="w-120 h-32 px-6 bg-white mt-4 rounded-xl shadow-md p-6 ml-5">
-                    <h4 className="text-black font-bold text-lg">Last Draw</h4>
-                    <h6 className="text-orange-600 font-bold text-lg mt-5" >Dec 24, 2024</h6>
-                </div>
-                <div className="w-120 h-32 px-6 bg-white mt-4 rounded-xl shadow-md p-6 ml-5">
-                    <h4 className="text-black font-bold text-lg">Entries Collected This Week</h4>
-                    <h6 className="text-orange-600 font-bold text-lg mt-5" >12,405</h6>
-                </div>
-            </div>
           {/* Filter and Search Section */}
-
-          <div className="w-full inline-flex gap-6">
-            <div className="inline-flex w-fit gap-6 ml-5 h-20">
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Open Disputes
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Closed
-              </button>
-
-             
-            </div>
-
-            <div className=" mt-4 mr-1 w-max-full ">
-              {/* Search Icon */}
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search Sellers..."
-                className=" rounded-xl border border-gray-300 ml-105 
-               py-3 pl-12 text-lg text-black
-               focus:outline-none focus:ring-2 focus:ring-gray-300
-               transition"
-              />
-            </div>
-            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/dashboard/Items/hostItem')}>
-              Host Item
-            </button>
-          </div>
 
           {/* Sidebar */}
           <div
@@ -196,12 +195,32 @@ export default function DashboardPage() {
                     icon: "/items.svg",
                     route: "/dashboard/Items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/dashboard/users"  },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/dashboard/winners" },
-                  { label: "Weekly Giveaway", icon: "/gift.svg",route:"/dashboard/giveaway" },
-                  { label: "Disputes", icon: "/disputes.svg", route: "/dashboard/disputes" },
-                  { label: "Revenue Overview", icon: "/revenue.svg" , route: "/dashboard/overview"},
-                  { label: "Manage Banners", icon: "/banners.svg"  , route: "/dashboard/banners"},
+                  {
+                    label: "Users",
+                    icon: "/user_logo.png",
+                    route: "/dashboard/users",
+                  },
+                  {
+                    label: "Winners & Fulfillment",
+                    icon: "/winners.svg",
+                    route: "/dashboard/winners",
+                  },
+                  {
+                    label: "Weekly Giveaway",
+                    icon: "/gift.svg",
+                    route: "/dashboard/giveaway",
+                  },
+                  {
+                    label: "Disputes",
+                    icon: "/disputes.svg",
+                    route: "/dashboard/disputes",
+                  },
+                  {
+                    label: "Revenue Overview",
+                    icon: "/revenue.svg",
+                    route: "/dashboard/overview",
+                  },
+                  { label: "Manage Banners", icon: "/banners.svg" , route: "/dashboard/banners" },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -233,7 +252,7 @@ export default function DashboardPage() {
                     handleLogout();
                     closeSidebar();
                   }}
-                  className={`mt-10 w-full py-3 rounded-xl text-black text-lg flex items-center cursor-pointer  
+                  className={`mt-10 w-full py-3 rounded-xl text-black text-lg flex items-center cursor-pointer
                         hover:text-white hover:bg-[#F2482D]
                         hover:shadow-[3px_3px_0px_black]
                         ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
@@ -254,80 +273,54 @@ export default function DashboardPage() {
             </aside>
           </div>
 
-          {/* Sellers List Section */}
-
-          <div className="w-full px-6 bg-white mt-10 rounded-xl shadow-md p-6">
-            {/* Table Header */}
-            <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-              <p>Dispute ID</p>
-              <p>Name of Person</p>
-              <p>User Type</p>
-              <p>Last Activity</p>
-              
-              <p className="text-center">Action</p>
-            </div>
-
-            {/* Table Rows */}
-            <div className="mt-3">
-              {[
-                { id: 1, status: "Pending" },
-                { id: 2, status: "Live" },
-                { id: 3, status: "Sold Out" },
-                { id: 4, status: "Pending" },
-                { id: 5, status: "Completed" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-                { id: 5, status: "Sold Out" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-              ].map((item, index) => {
-                // Map status to Tailwind CSS classes
-                const statusStyles = {
-                  Pending: "bg-yellow-200 text-yellow-800",
-                  Live: "bg-green-200 text-green-800",
-                  "Sold Out": "bg-red-200 text-red-800",
-                  Completed: "bg-[#E6F1FE] text-red-600",
-                  Expired: "bg-[#F3E8FF] text-gray-800",
-                };
-
-                return (
-                  <div
-                    key={index}
-                    className="grid grid-cols-5 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
-                  >
-                    <p>52345</p>
-                    <p>Zoya Brich</p>
-                    <p>Seller</p>
-                    <p>4 hr ago</p>
-                    
-
-                    <div className="flex justify-center">
+          {/* ================= FORM ================= */}
+          <div className=" p-5  mt-5">
+            <div className="mt-4">
+              <div className="flex items-center gap-[14.94px]">
+                {["/iphone.png", "/iphone2.png", "/iphone3.png"].map(
+                  (src, index) => (
+                    <div
+                      key={index}
+                      className="relative w-[198.73px] h-[180.84px]"
+                    >
+                      <img
+                        src={src}
+                        alt=""
+                        className="w-full h-full object-cover rounded-[14.94px] border-[1.49px] border-gray-300"
+                      />
+                      {/* Delete Icon */}
                       <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md"
-                        onClick={() =>
-                          router.push("activeSellers/activeDetail")
-                        }
+                        onClick={() => console.log("Delete", src)}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md hover:bg-red-600"
                       >
-                        👁
+                        &times; {/* Or use an SVG */}
                       </button>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  ),
+                )}
 
-
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
-              <p>Page 1 of 10</p>
-              <div className="flex gap-3">
-                <button className="border px-4 py-2 border rounded-xl shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                  Previous
-                </button>
-                <button className="border px-4 py-2 border rounded-xl font-semibold shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                  Next
+                <button
+                  type="button"
+                  className="w-[198.73px] h-[180.84px] border-[1.49px] border-dashed border-gray-300 rounded-[14.94px] flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 transition-colors"
+                >
+                  + Add More
                 </button>
               </div>
+            </div>
+
+            {/* Image Upload */}
+            <div className="flex flex-col items-center gap-4">
+              {/* Image preview */}
+              {selectedImage && (
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                  <img
+                    src={selectedImage}
+                    alt="Selected"
+                    className="max-w-xs max-h-60 object-contain border-none rounded-md"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

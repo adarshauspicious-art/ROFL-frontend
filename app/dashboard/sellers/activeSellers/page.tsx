@@ -96,9 +96,9 @@ export default function DashboardPage() {
               { label: "Users", icon: "/user_logo.png",route:"/dashboard/users"  },
               { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/dashboard/winners" },
               { label: "Weekly Giveaway", icon: "/gift.svg",route:"/dashboard/giveaway" },
-              { label: "Disputes", icon: "/disputes.svg" },
-              { label: "Revenue Overview", icon: "/revenue.svg" },
-              { label: "Manage Banners", icon: "/banners.svg" },
+              { label: "Disputes", icon: "/disputes.svg" , route: "/dashboard/disputes"},
+              { label: "Revenue Overview", icon: "/revenue.svg", route: "/dashboard/overview" },
+              { label: "Manage Banners", icon: "/banners.svg"  , route: "/dashboard/banners"},
             ].map((item, i) => (
               <li
                 key={i}

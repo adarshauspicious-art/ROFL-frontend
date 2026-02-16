@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -35,7 +35,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex relative">
+    <div className="min-h-screen bg-gray-100 flex relative overflow-x-hidden">
       {/* Overlay for mobile */}
       {isMobile && isOpen && (
         <div
@@ -55,7 +55,7 @@ export default function DashboardPage() {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Disputes</h1>
+            <h1 className="text-3xl login-title">Revenue Overview</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -96,51 +96,53 @@ export default function DashboardPage() {
             </div>
           </div>
 
-            <div className="flex flex-row gap-20">
-                <div className="w-120 h-32 px-6 bg-white mt-4 rounded-xl shadow-md p-6 ml-5">
-                    <h4 className="text-black font-bold text-lg">Dispute This Week</h4>
-                    <h6 className="text-orange-600 font-bold text-lg mt-5" >12</h6>
-                </div>
-                <div className="w-120 h-32 px-6 bg-white mt-4 rounded-xl shadow-md p-6 ml-5">
-                    <h4 className="text-black font-bold text-lg">Last Draw</h4>
-                    <h6 className="text-orange-600 font-bold text-lg mt-5" >Dec 24, 2024</h6>
-                </div>
-                <div className="w-120 h-32 px-6 bg-white mt-4 rounded-xl shadow-md p-6 ml-5">
-                    <h4 className="text-black font-bold text-lg">Entries Collected This Week</h4>
-                    <h6 className="text-orange-600 font-bold text-lg mt-5" >12,405</h6>
-                </div>
-            </div>
-          {/* Filter and Search Section */}
-
-          <div className="w-full inline-flex gap-6">
-            <div className="inline-flex w-fit gap-6 ml-5 h-20">
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Open Disputes
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Closed
-              </button>
-
-             
+            <div className="flex flex-row justify-between items-center mt-5  ">   
+            <p className="login-title  px-6  ">Key Stats</p>
+            <select className="text-black border border-gray-400 rounded-3xl px-4 py-3 mt-2 ml-6 focus:outline-none focus:ring-2 focus:ring-gray-300 w-45  ">
+              <option value="last">Last 7 Days</option>
+              <option value="last">Last 30 Days</option>
+              <option value="last">Last 90 Days</option>
+              <option value="last">Last 1 Year</option>
+            </select>
             </div>
 
-            <div className=" mt-4 mr-1 w-max-full ">
-              {/* Search Icon */}
+          <div className="flex flex-wrap gap-15 mt-10 px-6">
+            <div className="w-full sm:w-86 h-32 px-6 bg-white rounded-xl shadow-md p-6">
+              <h4 className="text-black font-bold text-lg">Gross Revenue</h4>
+              <h6 className="text-orange-600 font-bold text-lg mt-5">
+                $182,223
+              </h6>
+            </div>
+            <div className="w-full sm:w-92 h-32 px-6 bg-white rounded-xl shadow-md p-6">
+              <h4 className="text-black font-bold text-lg">Platform Revenue</h4>
+              <h6 className="text-orange-600 font-bold text-lg mt-5">
+                $15,223
+              </h6>
+            </div>
+            <div className="w-full sm:w-92 h-32 px-6 bg-white rounded-xl shadow-md p-6">
+              <h4 className="text-black font-bold text-lg">Payout Released</h4>
+              <h6 className="text-orange-600 font-bold text-lg mt-5">
+                $122,405
+              </h6>
+            </div>
+            <div className="w-full sm:w-92 h-32 px-6 bg-white rounded-xl shadow-md p-6">
+              <h4 className="text-black font-bold text-lg">Payout Pending</h4>
+              <h6 className="text-orange-600 font-bold text-lg mt-5">
+                $18,405
+              </h6>
+            </div>
+          </div>
+          <div className="flex justify-end mt-8 px-4">
+            <div className="w-full max-w-xs">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search Sellers..."
-                className=" rounded-xl border border-gray-300 ml-105 
-               py-3 pl-12 text-lg text-black
-               focus:outline-none focus:ring-2 focus:ring-gray-300
-               transition"
+                className="rounded-xl border border-gray-300 py-3 px-4 text-lg text-black
+                 focus:outline-none focus:ring-2 focus:ring-gray-300 w-full"
               />
             </div>
-            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/dashboard/Items/hostItem')}>
-              Host Item
-            </button>
           </div>
 
           {/* Sidebar */}
@@ -153,8 +155,8 @@ export default function DashboardPage() {
                         ? "translate-x-0 w-[280px]"
                         : "-translate-x-full w-[280px]"
                       : isOpen
-                        ? "translate-x-0 w-[300px]"
-                        : "translate-x-0 w-[80px]"
+                      ? "translate-x-0 w-[300px]"
+                      : "translate-x-0 w-[80px]"
                   }`}
           >
             <aside className="relative text-black">
@@ -196,12 +198,28 @@ export default function DashboardPage() {
                     icon: "/items.svg",
                     route: "/dashboard/Items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/dashboard/users"  },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/dashboard/winners" },
-                  { label: "Weekly Giveaway", icon: "/gift.svg",route:"/dashboard/giveaway" },
-                  { label: "Disputes", icon: "/disputes.svg", route: "/dashboard/disputes" },
-                  { label: "Revenue Overview", icon: "/revenue.svg" , route: "/dashboard/overview"},
-                  { label: "Manage Banners", icon: "/banners.svg"  , route: "/dashboard/banners"},
+                  {
+                    label: "Users",
+                    icon: "/user_logo.png",
+                    route: "/dashboard/users",
+                  },
+                  {
+                    label: "Winners & Fulfillment",
+                    icon: "/winners.svg",
+                    route: "/dashboard/winners",
+                  },
+                  {
+                    label: "Weekly Giveaway",
+                    icon: "/gift.svg",
+                    route: "/dashboard/giveaway",
+                  },
+                  {
+                    label: "Disputes",
+                    icon: "/disputes.svg",
+                    route: "/dashboard/disputes",
+                  },
+                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/dashboard/overview" },
+                  { label: "Manage Banners", icon: "/banners.svg" , route: "/dashboard/banners" },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -221,7 +239,11 @@ export default function DashboardPage() {
                       height={25}
                     />
                     <span
-                      className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+                      className={`whitespace-nowrap transition-all duration-300 ${
+                        isOpen
+                          ? "opacity-100 ml-2"
+                          : "opacity-0 w-0 overflow-hidden"
+                      }`}
                     >
                       {item.label}
                     </span>
@@ -238,14 +260,11 @@ export default function DashboardPage() {
                         hover:shadow-[3px_3px_0px_black]
                         ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
                 >
-                  <Image
-                    src="/logout.png"
-                    alt="Logout"
-                    width={25}
-                    height={25}
-                  />
+                  <Image src="/logout.png" alt="Logout" width={25} height={25} />
                   <span
-                    className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+                    className={`transition-all duration-300 ${
+                      isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"
+                    }`}
                   >
                     Logout
                   </span>
@@ -256,15 +275,16 @@ export default function DashboardPage() {
 
           {/* Sellers List Section */}
 
-          <div className="w-full px-6 bg-white mt-10 rounded-xl shadow-md p-6">
+          <div className="w-full  px-6 bg-white mt-10 rounded-xl shadow-md p-6">
             {/* Table Header */}
-            <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-              <p>Dispute ID</p>
-              <p>Name of Person</p>
-              <p>User Type</p>
-              <p>Last Activity</p>
-              
-              <p className="text-center">Action</p>
+            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+              <p>Date</p>
+              <p>Item</p>
+              <p>Seller</p>
+              <p>Gross Revenue</p>
+              <p>Platform Fee</p>
+              <p>Seller Net</p>
+              <p>Payout Status</p>
             </div>
 
             {/* Table Rows */}
@@ -293,29 +313,19 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={index}
-                    className="grid grid-cols-5 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                    className="grid grid-cols-7 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                   >
-                    <p>52345</p>
-                    <p>Zoya Brich</p>
-                    <p>Seller</p>
-                    <p>4 hr ago</p>
-                    
-
-                    <div className="flex justify-center">
-                      <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md"
-                        onClick={() =>
-                          router.push("activeSellers/activeDetail")
-                        }
-                      >
-                        👁
-                      </button>
-                    </div>
+                    <p>10/12/2024</p>
+                    <p>Name of the Item</p>
+                    <p>Zoya stark</p>
+                    <p>$14,220</p>
+                    <p>$22,220</p>
+                    <p>$25,500</p>
+                    <p>Completed</p>
                   </div>
                 );
               })}
             </div>
-
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-6 text-sm text-gray-500">

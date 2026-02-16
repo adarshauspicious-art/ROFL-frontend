@@ -100,8 +100,8 @@ export default function DashboardPage() {
 
           <div className="w-full inline-flex gap-6">
             <div className="inline-flex w-fit gap-6 ml-5 h-20">
-              <p className="login-title text-sm">
-                Entries Purchased This Week{" "}
+              <p className="login-title  text-sm">
+                Entries Purchased This Week
               </p>
             </div>
 
@@ -186,9 +186,9 @@ export default function DashboardPage() {
                   },
                   { label: "Winners & Fulfillment", icon: "/winners.svg" ,route:"/dashboard/winners"},
                   { label: "Weekly Giveaway", icon: "/gift.svg",route:"/dashboard/giveaway" },
-                  { label: "Disputes", icon: "/disputes.svg" },
-                  { label: "Revenue Overview", icon: "/revenue.svg" },
-                  { label: "Manage Banners", icon: "/banners.svg" },
+                  { label: "Disputes", icon: "/disputes.svg", route: "/dashboard/disputes" },
+                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/dashboard/overview" },
+                  { label: "Manage Banners", icon: "/banners.svg"  , route: "/dashboard/banners"},
                 ].map((item, i) => (
                   <li
                     key={i}
