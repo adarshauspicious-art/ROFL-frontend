@@ -55,7 +55,7 @@ export default function DashboardPage() {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Items</h1>
+            <h1 className="text-3xl login-title">Weekly Giveaway</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -100,29 +100,9 @@ export default function DashboardPage() {
 
           <div className="w-full inline-flex gap-6">
             <div className="inline-flex w-fit gap-6 ml-5 h-20">
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                All Items
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Live
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Pending
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Completed
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Sold Out
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Expired
-              </button>
+              <p className="login-title text-sm">
+                Entries Purchased This Week{" "}
+              </p>
             </div>
 
             <div className=" mt-4 mr-1 w-max-full ">
@@ -133,12 +113,15 @@ export default function DashboardPage() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search Sellers..."
                 className=" rounded-xl border border-gray-300 ml-105 
-               py-3 pl-12 text-lg text-black
-               focus:outline-none focus:ring-2 focus:ring-gray-300
-               transition"
+                   py-3 pl-12 text-lg text-black
+                   focus:outline-none focus:ring-2 focus:ring-gray-300
+                   transition"
               />
             </div>
-            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/dashboard/Items/hostItem')}>
+            <button
+              className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+              onClick={() => router.push("/dashboard/Items/hostItem")}
+            >
               Host Item
             </button>
           </div>
@@ -146,16 +129,16 @@ export default function DashboardPage() {
           {/* Sidebar */}
           <div
             className={`fixed top-0 left-0 h-screen bg-white p-2 shadow-lg rounded-r-2xl border border-gray-300 z-50
-                  transition-transform duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)]
-                  ${
-                    isMobile
-                      ? isOpen
-                        ? "translate-x-0 w-[280px]"
-                        : "-translate-x-full w-[280px]"
-                      : isOpen
-                        ? "translate-x-0 w-[300px]"
-                        : "translate-x-0 w-[80px]"
-                  }`}
+                      transition-transform duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)]
+                      ${
+                        isMobile
+                          ? isOpen
+                            ? "translate-x-0 w-[280px]"
+                            : "-translate-x-full w-[280px]"
+                          : isOpen
+                            ? "translate-x-0 w-[300px]"
+                            : "translate-x-0 w-[80px]"
+                      }`}
           >
             <aside className="relative text-black">
               {/* Header */}
@@ -196,8 +179,12 @@ export default function DashboardPage() {
                     icon: "/items.svg",
                     route: "/dashboard/Items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/dashboard/users"  },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/dashboard/winners" },
+                  {
+                    label: "Users",
+                    icon: "/user_logo.png",
+                    route: "/dashboard/users",
+                  },
+                  { label: "Winners & Fulfillment", icon: "/winners.svg" ,route:"/dashboard/winners"},
                   { label: "Weekly Giveaway", icon: "/gift.svg",route:"/dashboard/giveaway" },
                   { label: "Disputes", icon: "/disputes.svg" },
                   { label: "Revenue Overview", icon: "/revenue.svg" },
@@ -210,9 +197,9 @@ export default function DashboardPage() {
                       closeSidebar();
                     }}
                     className={`mt-2 w-full py-3 rounded-xl text-black text-lg flex items-center cursor-pointer
-                          hover:text-white hover:bg-[#F2482D]
-                          hover:shadow-[3px_3px_0px_black]
-                          ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
+                              hover:text-white hover:bg-[#F2482D]
+                              hover:shadow-[3px_3px_0px_black]
+                              ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
                   >
                     <Image
                       src={item.icon}
@@ -234,9 +221,9 @@ export default function DashboardPage() {
                     closeSidebar();
                   }}
                   className={`mt-10 w-full py-3 rounded-xl text-black text-lg flex items-center cursor-pointer
-                        hover:text-white hover:bg-[#F2482D]
-                        hover:shadow-[3px_3px_0px_black]
-                        ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
+                            hover:text-white hover:bg-[#F2482D]
+                            hover:shadow-[3px_3px_0px_black]
+                            ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
                 >
                   <Image
                     src="/logout.png"
@@ -258,15 +245,11 @@ export default function DashboardPage() {
 
           <div className="w-full px-6 bg-white mt-10 rounded-xl shadow-md p-6">
             {/* Table Header */}
-            <div className="grid grid-cols-9 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-              <p>Item ID</p>
-              <p>Item Name</p>
-              <p>Seller Name</p>
-              <p>FMV</p>
-              <p>Ticket Price</p>
-              <p>Slots Filled</p>
-              <p>Time Left</p>
-              <p>Status</p>
+            <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+              <p>Sr.No</p>
+              <p>Name of the User</p>
+              <p>Email address</p>
+              <p>Ticket Purchased</p>
               <p className="text-center">Action</p>
             </div>
 
@@ -296,20 +279,12 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={index}
-                    className="grid grid-cols-9 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                    className="grid grid-cols-5 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                   >
-                    <p>12345</p>
+                    <p>25345</p>
                     <p>Name of Item</p>
-                    <p>Kaeal Smith</p>
-                    <p>$5,220</p>
-                    <p>$34</p>
-                    <p>12/20</p>
-                    <p>6 days</p>
-                    <p
-                      className={`w-30 flex items-center justify-center py-2 rounded-3xl ${statusStyles[item.status]}`}
-                    >
-                      {item.status}
-                    </p>
+                    <p>kaealmith@mail.com</p>
+                    <p>45</p>
 
                     <div className="flex justify-center">
                       <button
@@ -325,31 +300,6 @@ export default function DashboardPage() {
                 );
               })}
             </div>
-
-            <form
-              action="http://localhost:5000/upload"
-              method="post"
-              encType="multipart/form-data"
-              className="flex items-center justify-between gap-4 bg-gray-200 p-3 rounded-lg w-full max-w-md"
-            >
-              <input
-                type="file"
-                name="image"
-                className="flex-1 text-sm text-gray-700
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-md file:border-0
-               file:text-sm file:font-semibold
-               file:bg-gray-300 file:text-gray-800
-               hover:file:bg-gray-400"
-              />
-
-              <button
-                type="submit"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
-              >
-                Upload
-              </button>
-            </form>
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-6 text-sm text-gray-500">

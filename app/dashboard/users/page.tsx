@@ -55,7 +55,7 @@ export default function DashboardPage() {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Items</h1>
+            <h1 className="text-3xl login-title">Users</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -101,28 +101,13 @@ export default function DashboardPage() {
           <div className="w-full inline-flex gap-6">
             <div className="inline-flex w-fit gap-6 ml-5 h-20">
               <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                All Items
+                All Users
               </button>
 
               <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Live
+                Blocked Users
               </button>
 
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Pending
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Completed
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Sold Out
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Expired
-              </button>
             </div>
 
             <div className=" mt-4 mr-1 w-max-full ">
@@ -196,8 +181,8 @@ export default function DashboardPage() {
                     icon: "/items.svg",
                     route: "/dashboard/Items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/dashboard/users"  },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/dashboard/winners" },
+                  { label: "Users", icon: "/user_logo.png",route:"/dashboard/users" },
+                  { label: "Winners & Fulfillment", icon: "/winners.svg" ,route:"/dashboard/winners"},
                   { label: "Weekly Giveaway", icon: "/gift.svg",route:"/dashboard/giveaway" },
                   { label: "Disputes", icon: "/disputes.svg" },
                   { label: "Revenue Overview", icon: "/revenue.svg" },
@@ -258,14 +243,11 @@ export default function DashboardPage() {
 
           <div className="w-full px-6 bg-white mt-10 rounded-xl shadow-md p-6">
             {/* Table Header */}
-            <div className="grid grid-cols-9 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+            <div className="grid grid-cols-6 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
               <p>Item ID</p>
-              <p>Item Name</p>
-              <p>Seller Name</p>
-              <p>FMV</p>
-              <p>Ticket Price</p>
-              <p>Slots Filled</p>
-              <p>Time Left</p>
+              <p>Name of the User</p>
+              <p>Email address</p>
+              <p>Phone Number</p>
               <p>Status</p>
               <p className="text-center">Action</p>
             </div>
@@ -296,15 +278,13 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={index}
-                    className="grid grid-cols-9 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                    className="grid grid-cols-6 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                   >
                     <p>12345</p>
                     <p>Name of Item</p>
                     <p>Kaeal Smith</p>
-                    <p>$5,220</p>
-                    <p>$34</p>
-                    <p>12/20</p>
-                    <p>6 days</p>
+                    <p>7560011001</p>
+                    
                     <p
                       className={`w-30 flex items-center justify-center py-2 rounded-3xl ${statusStyles[item.status]}`}
                     >
@@ -326,30 +306,7 @@ export default function DashboardPage() {
               })}
             </div>
 
-            <form
-              action="http://localhost:5000/upload"
-              method="post"
-              encType="multipart/form-data"
-              className="flex items-center justify-between gap-4 bg-gray-200 p-3 rounded-lg w-full max-w-md"
-            >
-              <input
-                type="file"
-                name="image"
-                className="flex-1 text-sm text-gray-700
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-md file:border-0
-               file:text-sm file:font-semibold
-               file:bg-gray-300 file:text-gray-800
-               hover:file:bg-gray-400"
-              />
-
-              <button
-                type="submit"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
-              >
-                Upload
-              </button>
-            </form>
+            
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
