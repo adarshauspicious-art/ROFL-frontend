@@ -269,10 +269,7 @@ export default function DashboardPage() {
                 icon: <FiAward />,
               },
             ].map((card, i) => (
-              <div
-                key={i}
-                className="relative bg-white p-5 rounded-xl border"
-              >
+              <div key={i} className="relative bg-white p-5 rounded-xl border">
                 {/* Blue Icon Box */}
                 <div className="absolute top-4 right-4 bg-[#497BC6] p-2 rounded-lg">
                   <div className="text-white text-lg">{card.icon}</div>
@@ -430,28 +427,28 @@ export default function DashboardPage() {
                 Last 5 Gift Winners
               </h2>
 
-              <ul className="space-y-2  text-gray-700 mt-5 ">
+              <ul className="space-y-2  text-gray-700 mt-5  ">
                 <li className="flex justify-between hover:bg-gray-100 transition-colors ">
                   <span className="text-black text-sm mt-5">Jordan Smith</span>
-                  <span>Jan 24</span>
+                  <span>Jan 24,2025</span>
                 </li>
                 <li className="flex justify-between hover:bg-gray-100 transition-colors">
                   <span className="text-black text-sm mt-5">
                     Chris Williams
                   </span>
-                  <span>Mar 5</span>
+                  <span>Mar 5,2025</span>
                 </li>
                 <li className="flex justify-between hover:bg-gray-100 transition-colors">
                   <span className="text-black text-sm mt-5">Zane Floyd</span>
-                  <span>Jan 24</span>
+                  <span>Jan 24,2025</span>
                 </li>
                 <li className="flex justify-between hover:bg-gray-100 transition-colors">
                   <span className="text-black text-sm mt-5">Zane Floyd</span>
-                  <span>Jan 24</span>
+                  <span>Jan 24,2025</span>
                 </li>
                 <li className="flex justify-between hover:bg-gray-100 transition-colors">
                   <span className="text-black text-sm mt-5">Zane Floyd</span>
-                  <span>Jan 24</span>
+                  <span>Jan 24,2025</span>
                 </li>
               </ul>
             </div>
