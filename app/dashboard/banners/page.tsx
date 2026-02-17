@@ -49,7 +49,7 @@ export default function ProfileImage() {
         Authorization: `Bearer ${token}`,
       },
       body: formData,
-    }); 
+    });
   };
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -75,8 +75,6 @@ export default function ProfileImage() {
 
     fetchProfileImage();
   }, []);
-
-  
 
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
@@ -220,7 +218,11 @@ export default function ProfileImage() {
                     icon: "/revenue.svg",
                     route: "/dashboard/overview",
                   },
-                  { label: "Manage Banners", icon: "/banners.svg" , route: "/dashboard/banners" },
+                  {
+                    label: "Manage Banners",
+                    icon: "/banners.svg",
+                    route: "/dashboard/banners",
+                  },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -306,21 +308,6 @@ export default function ProfileImage() {
                   + Add More
                 </button>
               </div>
-            </div>
-
-            {/* Image Upload */}
-            <div className="flex flex-col items-center gap-4">
-              {/* Image preview */}
-              {selectedImage && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className="max-w-xs max-h-60 object-contain border-none rounded-md"
-                  />
-                </div>
-              )}
             </div>
           </div>
         </div>
