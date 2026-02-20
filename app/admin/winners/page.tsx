@@ -9,7 +9,14 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+    if (!user || user.role !== "admin") {
+      router.push("/login");
+    }
+  }, []);
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -112,7 +119,6 @@ export default function DashboardPage() {
                transition"
               />
             </div>
-           
           </div>
 
           {/* Sidebar */}
@@ -173,11 +179,31 @@ export default function DashboardPage() {
                     icon: "/user_logo.png",
                     route: "/admin/users",
                   },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/admin/winners" },
-                  { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway" },
-                  { label: "Disputes", icon: "/disputes.svg" , route: "/admin/disputes"},
-                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-                  { label: "Manage Banners", icon: "/banners.svg"  , route: "/admin/banners"},
+                  {
+                    label: "Winners & Fulfillment",
+                    icon: "/winners.svg",
+                    route: "/admin/winners",
+                  },
+                  {
+                    label: "Weekly Giveaway",
+                    icon: "/gift.svg",
+                    route: "/admin/giveaway",
+                  },
+                  {
+                    label: "Disputes",
+                    icon: "/disputes.svg",
+                    route: "/admin/disputes",
+                  },
+                  {
+                    label: "Revenue Overview",
+                    icon: "/revenue.svg",
+                    route: "/admin/overview",
+                  },
+                  {
+                    label: "Manage Banners",
+                    icon: "/banners.svg",
+                    route: "/admin/banners",
+                  },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -247,16 +273,15 @@ export default function DashboardPage() {
             {/* Table Rows */}
             <div className="mt-3">
               {[
-                  { id: 1, status: "Delivered" },
-                  { id: 2, status: "Pending" },
-                  { id: 3, status: "Delivered" },
-                  { id: 4, status: "Pending" },
-                  { id: 5, status: "Delivered" },
-                  { id: 6, status: "Pending" },
-                  { id: 7, status: "Delivered" },
-                  { id: 8, status: "Pending" },
-                  { id: 9, status: "Delivered" },
-                
+                { id: 1, status: "Delivered" },
+                { id: 2, status: "Pending" },
+                { id: 3, status: "Delivered" },
+                { id: 4, status: "Pending" },
+                { id: 5, status: "Delivered" },
+                { id: 6, status: "Pending" },
+                { id: 7, status: "Delivered" },
+                { id: 8, status: "Pending" },
+                { id: 9, status: "Delivered" },
               ].map((item, index) => {
                 // Map status to Tailwind CSS classes
                 const statusStyles = {
@@ -273,7 +298,11 @@ export default function DashboardPage() {
                     <p>Name of Item</p>
                     <p>Kaeal Smith</p>
                     <p>
-                        <img src="/link.png" alt="Tracking Link" className="w-18 h-11" />
+                      <img
+                        src="/link.png"
+                        alt="Tracking Link"
+                        className="w-18 h-11"
+                      />
                     </p>
                     <p>jhoncena@gmail.com</p>
                     <p
@@ -286,7 +315,9 @@ export default function DashboardPage() {
                       <button
                         className="bg-blue-500 text-white px-3 py-1 rounded-md"
                         onClick={() =>
-                          router.push("activeSellers/activeDetail")
+                          router.push(
+                            "/admin/sellers/activeSellers/activeDetail",
+                          )
                         }
                       >
                         👁

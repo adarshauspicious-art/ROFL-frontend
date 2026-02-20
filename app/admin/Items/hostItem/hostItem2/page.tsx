@@ -12,7 +12,13 @@ export default function ProfileImage() {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [file, setFile] = useState(null);
+useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+    if (!user || user.role !== "admin") {
+        router.push("/login");
+    }
+}, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");

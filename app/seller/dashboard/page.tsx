@@ -1,5 +1,4 @@
 "use client";
-import { FiUsers, FiShoppingBag, FiClock, FiAward } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -17,18 +16,15 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
-   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (!user || user.role !== "admin") {
-      router.push("/login");
-    }
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) router.push("/login");
-  }, [router]);
+  if (!token || !user || user.role !== "seller") {
+    router.push("/login");
+  }
+}, []);
+  
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -116,43 +112,26 @@ export default function DashboardPage() {
               {
                 label: "Dashboard",
                 icon: "/dashboard.png",
-                route: "/admin/dashboard",
+                route: "/seller/dashboard",
               },
-              {
-                label: "Sellers",
-                icon: "/user_logo.png",
-                route: "/admin/sellers/activeSellers",
+
+              { label: "Items",
+                icon: "/items.svg",
+                 route: "/seller/items"
               },
-              { label: "Items", icon: "/items.svg", route: "/admin/Items" },
-              {
-                label: "Users",
-                icon: "/user_logo.png",
-                route: "/admin/users",
+              { label: "Orders & Shipping",
+                 icon: "/gift.svg",
+                  route: "/seller/order-shipping"
               },
-              {
-                label: "Winners & Fulfillment",
-                icon: "/winners.svg",
-                route: "/admin/winners",
+              { label: "Payouts ",
+                icon: "/revenue.svg",
+                route: "/seller/payouts"
               },
-              {
-                label: "Weekly Giveaway",
-                icon: "/gift.svg",
-                route: "/admin/giveaway",
-              },
+
               {
                 label: "Disputes",
                 icon: "/disputes.svg",
-                route: "/admin/disputes",
-              },
-              {
-                label: "Revenue Overview",
-                icon: "/revenue.svg",
-                route: "/admin/overview",
-              },
-              {
-                label: "Manage Banners",
-                icon: "/banners.svg",
-                route: "/admin/banners",
+                route: "/seller/disputes",
               },
             ].map((item, i) => (
               <li
@@ -253,47 +232,34 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             {[
               {
-                title: "Total Sellers",
-                value: "124",
-                subtitle: "Total verified sellers on the platform.",
-                icon: <FiUsers />,
+                title: "Verification",
+
+                value: "Not Yet Verified",
               },
               {
-                title: "Live Items",
+                title: "Active Listings",
                 value: "38",
-                subtitle: "Items currently active and selling tickets.",
-                icon: <FiShoppingBag />,
               },
               {
-                title: "Pending Approval",
-                value: "50",
-                subtitle: "Sellers waiting for identity verification.",
-                icon: <FiClock />,
+                title: "Sold Out",
+                value: "3",
               },
               {
-                title: "Winners This Month",
-                value: "48",
-                subtitle: "Number of users who won this month.",
-                icon: <FiAward />,
+                title: "Total Earned",
+                value: "$10,000",
               },
             ].map((card, i) => (
               <div key={i} className="relative bg-white p-5 rounded-xl border">
-                {/* Blue Icon Box */}
-                <div className="absolute top-4 right-4 bg-[#497BC6] p-2 rounded-lg">
-                  <div className="text-white text-lg">{card.icon}</div>
-                </div>
-
                 <p className="text-black text-xl text-bold">{card.title}</p>
                 <h2 className="text-2xl mt-6 font-bold text-[#F2482D]">
                   {card.value}
                 </h2>
-                <p className="text-sm mt-3 text-gray-500">{card.subtitle}</p>
               </div>
             ))}
           </div>
 
           {/* Table + Winners */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid-cols-3 gap-6 mb-6">
             <div className="lg:col-span-2 bg-white p-5 rounded-xl shadow">
               <h2 className="font-bold text-[#F2482D] text-lg mb-4 login-title">
                 Active Items
@@ -352,61 +318,6 @@ export default function DashboardPage() {
                 </table>
               </div>
             </div>
-
-            <div className="bg-white p-5 rounded-xl shadow">
-              <h2 className="font-bold text-[#F2482D] text-lg mb-4 login-title">
-                Recent Winners
-              </h2>
-
-              <div className="max-h-96 overflow-y-auto bg-gray-50 ">
-                <ul className="text-black text-lg grid gap-y-3">
-                  {[
-                    "Alex Thompson",
-                    "Jordan Mitchell",
-                    "Taylor Johnson",
-                    "Jordan Smith",
-                    "Alexandra Brown",
-                    "Chris Williams",
-                    "Morgas Devis",
-                    "Chris Bottom",
-                    "Roman Reings",
-                    "Brock Lesnar",
-                  ].map((name, i) => {
-                    const getOrdinal = (n) => {
-                      const s = ["th", "st", "nd", "rd"],
-                        v = n % 100;
-                      return n + (s[(v - 20) % 10] || s[v] || s[0]);
-                    };
-
-                    return (
-                      <li
-                        key={i}
-                        className="grid grid-cols-[50px_1fr_50px] items-center gap-3 p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors"
-                      >
-                        {/* Column 1: Number */}
-                        <span className="font-lg  ">{getOrdinal(i + 1)}</span>
-
-                        {/* Column 2: Name */}
-                        <span>{name}</span>
-
-                        {/* Column 3: Action */}
-                        <button
-                          className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#497BC6] text-white hover:bg-blue-600"
-                          title="Approve"
-                        >
-                          <Image
-                            src="/eyeC.png"
-                            alt="View"
-                            width={21}
-                            height={21}
-                          />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -430,33 +341,35 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-white p-5 rounded-xl shadow ">
+            <div className="bg-white p-4 rounded-xl shadow ">
               <h2 className="font-bold text-lg text-[#F2482D] login-title  ">
-                Last 5 Gift Winners
+                Shipping & Revenue
               </h2>
 
               <ul className="space-y-2  text-gray-700 mt-5  ">
                 <li className="flex justify-between hover:bg-gray-100 transition-colors ">
-                  <span className="text-black text-sm mt-5">Jordan Smith</span>
-                  <span>Jan 24,2025</span>
+                  <span className="text-black text-sm mt-5">To be Shipped</span>
+                  <span>1</span>
+                </li>
+                <li className="flex justify-between hover:bg-gray-100 transition-colors">
+                  <span className="text-black text-sm mt-5">In Transit </span>
+                  <span>2</span>
+                </li>
+                <li className="flex justify-between hover:bg-gray-100 transition-colors">
+                  <span className="text-black text-sm mt-5">Delivered</span>
+                  <span>6</span>
                 </li>
                 <li className="flex justify-between hover:bg-gray-100 transition-colors">
                   <span className="text-black text-sm mt-5">
-                    Chris Williams
+                    Monthly Paout Released
                   </span>
-                  <span>Mar 5,2025</span>
+                  <span>$2,500</span>
                 </li>
                 <li className="flex justify-between hover:bg-gray-100 transition-colors">
-                  <span className="text-black text-sm mt-5">Zane Floyd</span>
-                  <span>Jan 24,2025</span>
-                </li>
-                <li className="flex justify-between hover:bg-gray-100 transition-colors">
-                  <span className="text-black text-sm mt-5">Zane Floyd</span>
-                  <span>Jan 24,2025</span>
-                </li>
-                <li className="flex justify-between hover:bg-gray-100 transition-colors">
-                  <span className="text-black text-sm mt-5">Zane Floyd</span>
-                  <span>Jan 24,2025</span>
+                  <span className="text-black text-sm mt-5">
+                    Pending Payout
+                  </span>
+                  <span>$8,000</span>
                 </li>
               </ul>
             </div>

@@ -9,7 +9,13 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
+useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+    if (!user || user.role !== "admin") {
+        router.push("/login");
+    }
+}, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -258,7 +264,7 @@ export default function DashboardPage() {
 
                   <div className="flex justify-center gap-5">
                     <p className="underline text-blue-500 "> Unblock </p>
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("blockedSellers/blockedDetails")}>
+                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("/admin/sellers/blockedSellers/blockedDetails")}>
                       👁
                     </button>
                   </div>

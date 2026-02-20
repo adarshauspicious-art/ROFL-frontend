@@ -11,6 +11,13 @@ export default function DashboardPage() {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!user || user.role !== "admin") {
+        router.push("/login");
+    }
+}, []);
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
   }, [router]);
@@ -290,7 +297,7 @@ export default function DashboardPage() {
                       <button
                         className="bg-blue-500 text-white px-3 py-1 rounded-md"
                         onClick={() =>
-                          router.push("activeSellers/activeDetail")
+                          router.push("/admin/sellers/activeSellers/activeDetail")
                         }
                       >
                         👁

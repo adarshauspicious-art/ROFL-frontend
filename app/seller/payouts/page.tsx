@@ -9,17 +9,15 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
-useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (!user || user.role !== "admin") {
-        router.push("/login");
-    }
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  if (!token || !user || user.role !== "seller") {
+    router.push("/login");
+  }
 }, []);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) router.push("/login");
-  }, [router]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -61,7 +59,7 @@ useEffect(() => {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Revenue Overview</h1>
+            <h1 className="text-3xl login-title">Payouts</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -102,7 +100,7 @@ useEffect(() => {
             </div>
           </div>
 
-            <div className="flex flex-row justify-between items-center mt-5  ">   
+          <div className="flex flex-row justify-between items-center mt-5  ">
             <p className="login-title  px-6  ">Key Stats</p>
             <select className="text-black border border-gray-400 rounded-3xl px-4 py-3 mt-2 ml-6 focus:outline-none focus:ring-2 focus:ring-gray-300 w-45  ">
               <option value="last">Last 7 Days</option>
@@ -110,31 +108,25 @@ useEffect(() => {
               <option value="last">Last 90 Days</option>
               <option value="last">Last 1 Year</option>
             </select>
-            </div>
+          </div>
 
-          <div className="flex flex-wrap gap-15 mt-10 px-6">
+          <div className="flex flex-wrap gap-30 mt-10 px-6">
             <div className="w-full sm:w-86 h-32 px-6 bg-white rounded-xl shadow-md p-6">
-              <h4 className="text-black font-bold text-lg">Gross Revenue</h4>
-              <h6 className="text-orange-600 font-bold text-lg mt-5">
-                $182,223
-              </h6>
+              <h4 className="text-black font-bold text-lg">Pending Payouts</h4>
+              <h6 className="text-orange-600 font-bold text-lg mt-5">$2,223</h6>
             </div>
             <div className="w-full sm:w-92 h-32 px-6 bg-white rounded-xl shadow-md p-6">
-              <h4 className="text-black font-bold text-lg">Platform Revenue</h4>
+              <h4 className="text-black font-bold text-lg">
+                Released Last 30 days
+              </h4>
               <h6 className="text-orange-600 font-bold text-lg mt-5">
                 $15,223
               </h6>
             </div>
             <div className="w-full sm:w-92 h-32 px-6 bg-white rounded-xl shadow-md p-6">
-              <h4 className="text-black font-bold text-lg">Payout Released</h4>
+              <h4 className="text-black font-bold text-lg">Lifetime Earning</h4>
               <h6 className="text-orange-600 font-bold text-lg mt-5">
                 $122,405
-              </h6>
-            </div>
-            <div className="w-full sm:w-92 h-32 px-6 bg-white rounded-xl shadow-md p-6">
-              <h4 className="text-black font-bold text-lg">Payout Pending</h4>
-              <h6 className="text-orange-600 font-bold text-lg mt-5">
-                $18,405
               </h6>
             </div>
           </div>
@@ -161,8 +153,8 @@ useEffect(() => {
                         ? "translate-x-0 w-[280px]"
                         : "-translate-x-full w-[280px]"
                       : isOpen
-                      ? "translate-x-0 w-[300px]"
-                      : "translate-x-0 w-[80px]"
+                        ? "translate-x-0 w-[300px]"
+                        : "translate-x-0 w-[80px]"
                   }`}
           >
             <aside className="relative text-black">
@@ -192,40 +184,30 @@ useEffect(() => {
                   {
                     label: "Dashboard",
                     icon: "/dashboard.png",
-                    route: "/admin/dashboard",
+                    route: "/seller/dashboard",
                   },
-                  {
-                    label: "Sellers",
-                    icon: "/user_logo.png",
-                    route: "/admin/sellers/activeSellers",
-                  },
+
                   {
                     label: "Items",
                     icon: "/items.svg",
-                    route: "/admin/Items",
+                    route: "/seller/items",
                   },
                   {
-                    label: "Users",
-                    icon: "/user_logo.png",
-                    route: "/admin/users",
-                  },
-                  {
-                    label: "Winners & Fulfillment",
-                    icon: "/winners.svg",
-                    route: "/admin/winners",
-                  },
-                  {
-                    label: "Weekly Giveaway",
+                    label: "Orders & Shipping",
                     icon: "/gift.svg",
-                    route: "/admin/giveaway",
+                    route: "/seller/order-shipping",
                   },
+                  {
+                    label: "Payouts ",
+                    icon: "/revenue.svg",
+                    route: "/seller/payouts",
+                  },
+
                   {
                     label: "Disputes",
                     icon: "/disputes.svg",
-                    route: "/admin/disputes",
+                    route: "/seller/disputes",
                   },
-                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-                  { label: "Manage Banners", icon: "/banners.svg" , route: "/admin/banners" },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -266,10 +248,17 @@ useEffect(() => {
                         hover:shadow-[3px_3px_0px_black]
                         ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
                 >
-                  <Image src="/logout.png" alt="Logout" width={25} height={25} />
+                  <Image
+                    src="/logout.png"
+                    alt="Logout"
+                    width={25}
+                    height={25}
+                  />
                   <span
                     className={`transition-all duration-300 ${
-                      isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"
+                      isOpen
+                        ? "opacity-100 ml-2"
+                        : "opacity-0 w-0 overflow-hidden"
                     }`}
                   >
                     Logout
@@ -283,12 +272,10 @@ useEffect(() => {
 
           <div className="w-full  px-6 bg-white mt-10 rounded-xl shadow-md p-6">
             {/* Table Header */}
-            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+            <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
               <p>Date</p>
               <p>Item</p>
-              <p>Seller</p>
-              <p>Gross Revenue</p>
-              <p>Platform Fee</p>
+              <p>Desired Net</p>
               <p>Seller Net</p>
               <p>Payout Status</p>
             </div>
@@ -296,38 +283,36 @@ useEffect(() => {
             {/* Table Rows */}
             <div className="mt-3">
               {[
-                { id: 1, status: "Pending" },
-                { id: 2, status: "Live" },
-                { id: 3, status: "Sold Out" },
-                { id: 4, status: "Pending" },
+                { id: 1, status: "Completed" },
+                { id: 2, status: "Pending" },
+                { id: 3, status: "Completed" },
+                { id: 4, status: "Refunded" },
                 { id: 5, status: "Completed" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-                { id: 5, status: "Sold Out" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
+                { id: 6, status: "Pending" },
+                { id: 7, status: "Completed" },
+                { id: 8, status: "Refunded" },
               ].map((item, index) => {
                 // Map status to Tailwind CSS classes
                 const statusStyles = {
-                  Pending: "bg-yellow-200 text-yellow-800",
-                  Live: "bg-green-200 text-green-800",
-                  "Sold Out": "bg-red-200 text-red-800",
-                  Completed: "bg-[#E6F1FE] text-red-600",
-                  Expired: "bg-[#F3E8FF] text-gray-800",
+                  Pending: "bg-gray-400 text-white hover:bg-[#AFAFAF]",
+                  Completed: "bg-green-700 text-white hover:bg-[#4FA662]",
+                  Refunded: "bg-[#4F85A6] text-white hover:bg-[#AFAFAF]",
                 };
 
                 return (
                   <div
                     key={index}
-                    className="grid grid-cols-7 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                    className="grid grid-cols-5 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                   >
                     <p>10/12/2024</p>
                     <p>Name of the Item</p>
-                    <p>Zoya stark</p>
                     <p>$14,220</p>
                     <p>$22,220</p>
-                    <p>$25,500</p>
-                    <p>Completed</p>
+                    <p
+                      className={`w-30 flex items-center justify-center py-2 rounded-3xl ${statusStyles[item.status]}`}
+                    >
+                      {item.status}
+                    </p>
                   </div>
                 );
               })}

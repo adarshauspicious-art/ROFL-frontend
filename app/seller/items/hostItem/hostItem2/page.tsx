@@ -4,22 +4,23 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function DashboardPage() {
+export default function ProfileImage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [query, setQuery] = useState("");
-useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [profileImage, setProfileImage] = useState(null);
 
-    if (!user || user.role !== "admin") {
-        router.push("/login");
-    }
-}, []);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [file, setFile] = useState(null);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) router.push("/login");
-  }, [router]);
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!token || !user || user.role !== "seller") {
+      router.push("/login");
+    }
+  }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -38,6 +39,63 @@ useEffect(() => {
     });
     localStorage.removeItem("token");
     router.push("/login");
+  };
+
+  const handleProfileImageUpload = async () => {
+    if (!file) return alert("Please select an image");
+
+    const token = localStorage.getItem("token");
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("http://localhost:5000/user/profile-image", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    console.log("BACKEND RESPONSE ", data);
+
+    setProfileImage(data.imageUrl);
+    setSelectedImage(data.imageUrl);
+    setFile(null);
+  };
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:5000/user/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (data.profileImage?.url) {
+          setSelectedImage(data.profileImage.url); // 🔥 permanent image
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile image", err);
+      }
+    };
+
+    fetchProfileImage();
+  }, []);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setSelectedImage(data.imageUrl);
+    }
   };
 
   return (
@@ -61,7 +119,7 @@ useEffect(() => {
         <div className="w-full">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">Users</h1>
+            <h1 className="text-3xl login-title">Host Item</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -104,36 +162,6 @@ useEffect(() => {
 
           {/* Filter and Search Section */}
 
-          <div className="w-full inline-flex gap-6">
-            <div className="inline-flex w-fit gap-6 ml-5 h-20">
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                All Users
-              </button>
-
-              <button className="mt-4 px-6 text-gray-700 bg-white hover:bg-[#F2482D] py-2 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]">
-                Blocked Users
-              </button>
-
-            </div>
-
-            <div className=" mt-4 mr-1 w-max-full ">
-              {/* Search Icon */}
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search Sellers..."
-                className=" rounded-xl border border-gray-300 ml-105 
-               py-3 pl-12 text-lg text-black
-               focus:outline-none focus:ring-2 focus:ring-gray-300
-               transition"
-              />
-            </div>
-            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/admin/Items/hostItem')}>
-              Host Item
-            </button>
-          </div>
-
           {/* Sidebar */}
           <div
             className={`fixed top-0 left-0 h-screen bg-white p-2 shadow-lg rounded-r-2xl border border-gray-300 z-50
@@ -175,24 +203,30 @@ useEffect(() => {
                   {
                     label: "Dashboard",
                     icon: "/dashboard.png",
-                    route: "/admin/dashboard",
+                    route: "/seller/dashboard",
                   },
-                  {
-                    label: "Sellers",
-                    icon: "/user_logo.png",
-                    route: "/admin/sellers/activeSellers",
-                  },
+
                   {
                     label: "Items",
                     icon: "/items.svg",
-                    route: "/admin/Items",
+                    route: "/seller/items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/admin/users" },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg" ,route:"/admin/winners"},
-                  { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway" },
-                  { label: "Disputes", icon: "/disputes.svg" , route: "/admin/disputes"},
-                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-                  { label: "Manage Banners", icon: "/banners.svg"  , route: "/admin/banners"},
+                  {
+                    label: "Orders & Shipping",
+                    icon: "/gift.svg",
+                    route: "/seller/order-shipping",
+                  },
+                  {
+                    label: "Payouts ",
+                    icon: "/revenue.svg",
+                    route: "/seller/payouts",
+                  },
+
+                  {
+                    label: "Disputes",
+                    icon: "/disputes.svg",
+                    route: "/seller/disputes",
+                  },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -245,84 +279,85 @@ useEffect(() => {
             </aside>
           </div>
 
-          {/* Sellers List Section */}
+          {/* ================= FORM ================= */}
+          <div className="bg-white rounded-xl shadow p-5 shadow text-gray-800 mt-6">
+            <div className="bg-white rounded-xl shadow text-gray-800 mt-6 max-w-[1070px] mx-">
+              <div className="flex gap-8">
+                {/* Left: Large main image + thumbnails */}
+                <div>
+                  <img
+                    src="/iphone.png"
+                    alt="Main Item"
+                    className="w-[300px] h-[300px] object-cover rounded-lg border border-gray-300"
+                  />
+                  <div className="flex gap-3 mt-3">
+                    {[...Array(5)].map((_, i) => (
+                      <img
+                        key={i}
+                        src="/iphone.png"
+                        alt={`Thumbnail ${i + 1}`}
+                        className="w-[60px] h-[60px] object-cover rounded-md border border-gray-300"
+                      />
+                    ))}
+                  </div>
+                </div>
 
-          <div className="w-full px-6 bg-white mt-10 rounded-xl shadow-md p-6">
-            {/* Table Header */}
-            <div className="grid grid-cols-6 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-              <p>Item ID</p>
-              <p>Name of the User</p>
-              <p>Email address</p>
-              <p>Phone Number</p>
-              <p>Status</p>
-              <p className="text-center">Action</p>
-            </div>
+                {/* Right: Text info */}
+                <div className="flex-1">
+                  <h2 className="text-lg font-extrabold login-title mb-6">
+                    iPhone 17 Pro
+                  </h2>
 
-            {/* Table Rows */}
-            <div className="mt-3">
-              {[
-                { id: 1, status: "Pending" },
-                { id: 2, status: "Live" },
-                { id: 3, status: "Sold Out" },
-                { id: 4, status: "Pending" },
-                { id: 5, status: "Completed" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-                { id: 5, status: "Sold Out" },
-                { id: 6, status: "Live" },
-                { id: 7, status: "Expired" },
-              ].map((item, index) => {
-                // Map status to Tailwind CSS classes
-                const statusStyles = {
-                  Pending: "bg-yellow-200 text-yellow-800",
-                  Live: "bg-green-200 text-green-800",
-                  "Sold Out": "bg-red-200 text-red-800",
-                  Completed: "bg-[#E6F1FE] text-red-600",
-                  Expired: "bg-[#F3E8FF] text-gray-800",
-                };
-
-                return (
-                  <div
-                    key={index}
-                    className="grid grid-cols-6 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
-                  >
-                    <p>12345</p>
-                    <p>Name of Item</p>
-                    <p>Kaeal Smith</p>
-                    <p>7560011001</p>
-                    
-                    <p
-                      className={`w-30 flex items-center justify-center py-2 rounded-3xl ${statusStyles[item.status]}`}
-                    >
-                      {item.status}
-                    </p>
-
-                    <div className="flex justify-center">
-                      <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md"
-                        onClick={() =>
-                          router.push("/admin/sellers/activeSellers/activeDetail")
-                        }
-                      >
-                        👁
-                      </button>
+                  <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm">
+                    <div>
+                      <p className="text-base text-gray-600">Total Spots</p>
+                      <p className="font-semibold text-gray-900">50</p>
+                    </div>
+                    <div>
+                      <p className="text-base text-gray-600">
+                        Desired Net Payout
+                      </p>
+                      <p className="font-semibold login-title text-xl">
+                        $10,000
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-base text-gray-600">Total Pot</p>
+                      <p className=" text-gray-900">$14,000</p>
+                    </div>
+                    <div>
+                      <p className="text-base text-gray-600">Ticket Price</p>
+                      <p className="font-semibold text-gray-900">$50</p>
+                    </div>
+                    <div>
+                      <p className="text-base text-gray-600">Platform Fee</p>
+                      <p className="font-semibold text-gray-900">$1,440</p>
+                    </div>
+                    <div>
+                      <p className="text-base text-gray-600">IRS Withholding</p>
+                      <p className="font-semibold text-gray-900">$2,500</p>
+                    </div>
+                    <div>
+                      <p className="text-base text-gray-600">Processing Fee</p>
+                      <p className="font-semibold text-gray-900">$504</p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </div>
 
-            
-
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
-              <p>Page 1 of 10</p>
-              <div className="flex gap-3">
-                <button className="border px-4 py-2 border rounded-xl shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                  Previous
+              <div className="flex justify-between items-center mt-10">
+                <button className="text-base underline text-gray-600 hover:text-gray-900">
+                  Schedule Item
                 </button>
-                <button className="border px-4 py-2 border rounded-xl font-semibold shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                  Next
+                <button
+                  className="bg-[#F2482D] hover:bg-[#d13e22] shadow-[3px_3px_0px_black] text-white px-8 py-3 rounded-lg text-lg transition"
+                  onClick={() =>
+                    router.push(
+                      "/seller/Items/hostItem/hostItem2/itemDetailPage",
+                    )
+                  }
+                >
+                  Publish →
                 </button>
               </div>
             </div>

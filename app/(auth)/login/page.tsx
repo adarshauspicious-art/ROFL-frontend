@@ -5,13 +5,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -28,16 +27,17 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Login Successful:", data);
-        // Optionally save token in localStorage if your backend returns JWT
         localStorage.setItem("token", data.token);
-        
-        // Redirect user or update state
-        // alert("Login successful!");
-        router.push("/admin/dashboard");
-      } else {
-        console.error("Login Failed:", data.message);
-        alert(data.message || "Login failed");
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // 🔥 ROLE-BASED REDIRECT
+        if (data.user.role === "admin") {
+          router.push("/admin/dashboard");
+        } else if (data.user.role === "seller") {
+          router.push("/seller/dashboard");
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -47,7 +47,6 @@ export default function LoginPage() {
     // Optionally reset form
     setEmail("");
     setPassword("");
-    
   };
 
   return (
@@ -55,7 +54,7 @@ export default function LoginPage() {
       {/* LEFT SIDE IMAGE */}
       <div className="hidden md:block w-1/2 h-screen overflow-hidden rounded-r-[40px]">
         <Image
-          src="/rofl emoji.svg" 
+          src="/rofl emoji.svg"
           alt="Mascot"
           width={1200}
           height={1200}
@@ -65,7 +64,6 @@ export default function LoginPage() {
 
       {/* RIGHT SIDE LOGIN PANEL */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8">
-       
         <div className="absolute top-6 right-10 text-sm text-gray-500">
           Have Issues?{" "}
           <Link href="#" className="underline">
@@ -75,12 +73,7 @@ export default function LoginPage() {
 
         {/* LOGO */}
         <div className="mb-6 text-center">
-          <Image
-            src="/rofl_img.png" 
-            alt="ROFL Logo"
-            width={160}
-            height={80}
-          />
+          <Image src="/rofl_img.png" alt="ROFL Logo" width={160} height={80} />
         </div>
 
         {/* LOGIN CARD */}
@@ -144,7 +137,10 @@ export default function LoginPage() {
               </div>
 
               <div className="text-right mt-2">
-                <Link href="/forgot-password" className="text-sm text-gray-600 underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-gray-600 underline"
+                >
                   Forgot Password?
                 </Link>
               </div>

@@ -12,17 +12,15 @@ export default function ProfileImage() {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [file, setFile] = useState(null);
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (!user || user.role !== "admin") {
-        router.push("/login");
-    }
-}, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) router.push("/login");
-  }, [router]);
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!token || !user || user.role !== "seller") {
+      router.push("/login");
+    }
+  }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -205,24 +203,30 @@ export default function ProfileImage() {
                   {
                     label: "Dashboard",
                     icon: "/dashboard.png",
-                    route: "/admin/dashboard",
+                    route: "/seller/dashboard",
                   },
-                  {
-                    label: "Sellers",
-                    icon: "/user_logo.png",
-                    route: "/admin/sellers/activeSellers",
-                  },
+
                   {
                     label: "Items",
                     icon: "/items.svg",
-                    route: "/admin/Items",
+                    route: "/seller/items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/admin/users"  },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/admin/winners" },
-                  { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway"},
-                  { label: "Disputes", icon: "/disputes.svg", route: "/admin/disputes" },
-                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-                  { label: "Manage Banners", icon: "/banners.svg" , route: "/admin/banners" },
+                  {
+                    label: "Orders & Shipping",
+                    icon: "/gift.svg",
+                    route: "/seller/order-shipping",
+                  },
+                  {
+                    label: "Payouts ",
+                    icon: "/revenue.svg",
+                    route: "/seller/payouts",
+                  },
+
+                  {
+                    label: "Disputes",
+                    icon: "/disputes.svg",
+                    route: "/seller/disputes",
+                  },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -387,7 +391,10 @@ export default function ProfileImage() {
             </div>
 
             <div className="flex justify-end mt-6">
-              <button className="bg-[#F2482D]  hover:bg-[#F2482D] shadow-[3px_3px_0px_black] hover:text-white hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg" onClick={()=>router.push('/admin/Items/hostItem/hostItem2')}>
+              <button
+                className="bg-[#F2482D]  hover:bg-[#F2482D] shadow-[3px_3px_0px_black] hover:text-white hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg"
+                onClick={() => router.push("/seller/Items/hostItem/hostItem2")}
+              >
                 Next →
               </button>
             </div>

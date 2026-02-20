@@ -8,7 +8,13 @@ export default function ProfileImage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+    if (!user || user.role !== "admin") {
+        router.push("/login");
+    }
+}, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
