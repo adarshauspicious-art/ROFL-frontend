@@ -17,7 +17,7 @@ export default function RegisterPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/create-password", {
+      const response = await fetch("http://localhost:5000/web/user-register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           email,
           password,
-          confirmPassword: showConfirmPassword,
+          confirmPassword,
         }),
       });
 
@@ -172,8 +172,8 @@ export default function RegisterPage() {
             {/* REGISTER BUTTON */}
             <button
               className="mt-5 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black]"
-              type="button"
-              onClick={()=> router.push("/web/auths/create-account/sucess")}
+              type="submit"
+              // onClick={()=> router.push("/web/auths/create-account/sucess")}
             >
               Set Password <span>→</span>
             </button>

@@ -9,16 +9,53 @@ export default function ProfileImage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-
+  const [itemTitle, setItemTitle] = useState("");
+  const [selectCategory, setSelectCategory] = useState("");
+  const [desiredNetPayout, setDesiredNetPayout] = useState("");
+  const [selectTimeline, setSelectTimeline] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [file, setFile] = useState(null);
+
+  const handleNext = async () => {
+  if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
+    return alert("Please fill all required fields");
+  }
+
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("http://localhost:5000/host-items", {  
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      itemTitle,
+      selectCategory,
+      desiredNetPayout: Number(desiredNetPayout),
+      selectTimeline,
+      description,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!data.success) return alert(data.message || "Failed to create item");
+
+  // data.data has _id + calculations — save for page 2
+  localStorage.setItem("draftItem", JSON.stringify(data.data));
+
+  router.push("/admin/Items/hostItem/hostItem2");
+};
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!user || user.role !== "admin") {
-        router.push("/login");
+      router.push("/login");
     }
-}, []);
+  }, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -217,12 +254,36 @@ export default function ProfileImage() {
                     icon: "/items.svg",
                     route: "/admin/Items",
                   },
-                  { label: "Users", icon: "/user_logo.png",route:"/admin/users"  },
-                  { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/admin/winners" },
-                  { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway"},
-                  { label: "Disputes", icon: "/disputes.svg", route: "/admin/disputes" },
-                  { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-                  { label: "Manage Banners", icon: "/banners.svg" , route: "/admin/banners" },
+                  {
+                    label: "Users",
+                    icon: "/user_logo.png",
+                    route: "/admin/users",
+                  },
+                  {
+                    label: "Winners & Fulfillment",
+                    icon: "/winners.svg",
+                    route: "/admin/winners",
+                  },
+                  {
+                    label: "Weekly Giveaway",
+                    icon: "/gift.svg",
+                    route: "/admin/giveaway",
+                  },
+                  {
+                    label: "Disputes",
+                    icon: "/disputes.svg",
+                    route: "/admin/disputes",
+                  },
+                  {
+                    label: "Revenue Overview",
+                    icon: "/revenue.svg",
+                    route: "/admin/overview",
+                  },
+                  {
+                    label: "Manage Banners",
+                    icon: "/banners.svg",
+                    route: "/admin/banners",
+                  },
                 ].map((item, i) => (
                   <li
                     key={i}
@@ -282,36 +343,55 @@ export default function ProfileImage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-7 ">
               <input
                 placeholder="Item Title"
+                value={itemTitle}
+                onChange={(e) => setItemTitle(e.target.value)}
                 className="border rounded-lg p-3 border border-gray-300"
               />
 
-              <select className="border rounded-lg p-4 border border-gray-300">
-                <option>Select Category</option>
-                <option>Select Category1</option>
-                <option>Select Category2</option>
-                <option>Select Category3</option>
-                <option>Select Category4</option>
-                <option>Select Category5</option>
+              <select
+                value={selectCategory}
+                onChange={(e) => setSelectCategory(e.target.value)}
+                className="border rounded-lg p-4 border border-gray-300"
+              >
+                <option value="">Select Category</option>
+                <option>Tech & Electronics</option>
+                <option>Luxury Goods</option>
+                <option>Vechiles & Transportation</option>
+                <option>Fashion & Apparel</option>
+                <option>Home & Appliances</option>
+                <option>Sports & Outdoors</option>
+                <option>Collecteibles & Hobbies</option>
+                <option>Beauty & Health</option>
+                <option>Experiences & Services</option>
+                <option>Gift Cards</option>
               </select>
 
               <input
                 placeholder="Desired Net Payout"
+                value={desiredNetPayout}
+                onChange={(e) => setDesiredNetPayout(e.target.value)}
+                type="number"
                 className="border rounded-lg p-4 border border-gray-300"
               />
 
-              <select className="border rounded-lg p-3 border border-gray-300">
-                <option>Select Timeline</option>
-                <option>Select Timeline1</option>
-                <option>Select Timeline2</option>
-                <option>Select Timeline3</option>
-                <option>Select Timeline4</option>
-                <option>Select Timeline5</option>
+              <select
+                value={selectTimeline}
+                onChange={(e) => setSelectTimeline(e.target.value)}
+                className="border rounded-lg p-3 border border-gray-300"
+              >
+                <option value="">Select Timeline</option>
+                <option>7 Days</option>
+                <option>15 Days</option>
+                <option>21 Days</option>
+                <option>30 Days</option>
               </select>
             </div>
 
             <textarea
               placeholder="Description"
-              className="border rounded-lg p-3 w-full mt-4 border border-gray-300 "
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="border rounded-lg p-3 w-full mt-4 border border-gray-300"
               rows={4}
             />
 
@@ -387,7 +467,10 @@ export default function ProfileImage() {
             </div>
 
             <div className="flex justify-end mt-6">
-              <button className="bg-[#F2482D]  hover:bg-[#F2482D] shadow-[3px_3px_0px_black] hover:text-white hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg" onClick={()=>router.push('/admin/Items/hostItem/hostItem2')}>
+              <button
+                className="bg-[#F2482D] shadow-[3px_3px_0px_black] hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg"
+                onClick={handleNext}
+              >
                 Next →
               </button>
             </div>

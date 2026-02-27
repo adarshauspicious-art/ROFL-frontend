@@ -30,7 +30,7 @@ export default function LoginPage() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        // 🔥 ROLE-BASED REDIRECT
+        //  ROLE-BASED REDIRECT
         if (data.user.role === "admin") {
           router.push("/admin/dashboard");
         } else if (data.user.role === "seller") {

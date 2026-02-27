@@ -15,7 +15,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/web/auths/login", {
+      const response = await fetch("http://localhost:5000/web/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,10 +27,11 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        // localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        router.push("/dashboard");
+        console.log("Login Successful:", data);
+        alert("Login successful!");
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -67,6 +68,7 @@ export default function LoginPage() {
         {/* LOGO */}
         <div className="mb-6 text-center">
           <Image src="/rofl_img.png" alt="ROFL Logo" width={160} height={80} />
+          {/* <p className="mt-0 ">Win Big. Play Less.</p> */}
         </div>
 
         {/* LOGIN CARD */}
@@ -147,7 +149,6 @@ export default function LoginPage() {
               Login <span>→</span>
             </button>
 
-
             {/* OR DIVIDER */}
             <div className="flex items-center text-gray-400 text-sm my-6">
               <hr className="flex-grow border-t border-gray-600" />
@@ -169,11 +170,13 @@ export default function LoginPage() {
               <span className="text-sm font-medium">Continue with Google</span>
             </button>
 
-
             {/* CREATE ACCOUNT */}
             <p className="mt-5 text-left  text-gray-400 text-sm  ">
               Don’t have an account?{"  "}
-              <Link href="/web/auths/create-account" className="underline font-medium">
+              <Link
+                href="/web/auths/create-account"
+                className="underline font-medium"
+              >
                 Create One.
               </Link>
             </p>
