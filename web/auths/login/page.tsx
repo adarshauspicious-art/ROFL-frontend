@@ -10,12 +10,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://localhost:5000/web/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,17 +27,11 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        // localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        //  ROLE-BASED REDIRECT
-        if (data.user.role === "admin") {
-          router.push("/admin/dashboard");
-        } else if (data.user.role === "seller") {
-          router.push("/seller/dashboard");
-        } else {
-          router.push("/");
-        }
+        console.log("Login Successful:", data);
+        alert("Login successful!");
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -50,11 +44,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white">
+    <div className="min-h-screen w-full flex bg-black">
       {/* LEFT SIDE IMAGE */}
       <div className="hidden md:block w-1/2 h-screen overflow-hidden rounded-r-[40px]">
         <Image
-          src="/rofl emoji.svg"
+          src="/webLogImg.svg"
           alt="Mascot"
           width={1200}
           height={1200}
@@ -64,7 +58,7 @@ export default function LoginPage() {
 
       {/* RIGHT SIDE LOGIN PANEL */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8">
-        <div className="absolute top-6 right-10 text-sm text-gray-500">
+        <div className="absolute top-15 right-10 text-sm text-gray-400">
           Have Issues?{" "}
           <Link href="#" className="underline">
             Contact Support
@@ -74,19 +68,20 @@ export default function LoginPage() {
         {/* LOGO */}
         <div className="mb-6 text-center">
           <Image src="/rofl_img.png" alt="ROFL Logo" width={160} height={80} />
+          {/* <p className="mt-0 ">Win Big. Play Less.</p> */}
         </div>
 
         {/* LOGIN CARD */}
         <form
-          className="space-y-4 border rounded-3xl border-gray-200 shadow-xl"
+          className="space-y-4    border rounded-3xl border-gray-950 shadow-xl login-card"
           onSubmit={handleSubmit}
         >
-          <div className="w-full max-w-md  rounded-3xl p-10">
+          <div className="w-full max-w-md  rounded-3xl p-10  border-none">
             <h1 className="login-title text-center text-sm ">
-              Login To Your <br /> Account
+              Login To Your Account
             </h1>
 
-            <p className="mt-3 font-cabinet text-center text-gray-600 text-sm">
+            <p className="mt-3 font-cabinet text-center text-gray-400 text-sm">
               Sign in with email and password to securely access your account.
             </p>
 
@@ -94,7 +89,7 @@ export default function LoginPage() {
             <div className="mt-5 relative">
               <input
                 type="email"
-                className=" mt-2 w-full border border-gray-300 pl-9 text-black rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D] "
+                className=" mt-2 w-full border border-zinc-500/40 pl-9 text-Black rounded-xl px-4 py-3 bg-zinc-800/70 hover:bg-zinc-700/80 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D] transition duration-300 "
                 placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -114,7 +109,7 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  className="w-full border border-gray-300 text-black rounded-xl px-4 py-3 pl-9  focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D]"
+                  className="w-full border border-zinc-500/40 text-gray-200 rounded-xl px-4 py-3 pl-9 bg-zinc-800/70  hover:bg-zinc-700/80 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-[#F2482D] transition duration-300"
                   placeholder="Password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -138,8 +133,8 @@ export default function LoginPage() {
 
               <div className="text-right mt-2">
                 <Link
-                  href="/forgot-password"
-                  className="text-sm text-gray-600 underline"
+                  href="/web/auths/forget-password"
+                  className="text-sm text-gray-400 underline"
                 >
                   Forgot Password?
                 </Link>
@@ -148,16 +143,40 @@ export default function LoginPage() {
 
             {/* LOGIN BUTTON */}
             <button
-              className="mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_black]"
+              className="mt-4 w-full text-white bg-[#F2482D] hover:bg-[#d33c25] py-3 rounded-xl border border-black  flex items-center justify-center gap-2 "
               type="submit"
             >
               Login <span>→</span>
             </button>
 
+            {/* OR DIVIDER */}
+            <div className="flex items-center text-gray-400 text-sm my-6">
+              <hr className="flex-grow border-t border-gray-600" />
+              <span className="mx-4">Or</span>
+              <hr className="flex-grow border-t border-gray-600" />
+            </div>
+
+            {/* Continue with the google */}
+            <button
+              className="w-full flex items-center justify-center gap-3 
+               bg-zinc-800/70 hover:bg-zinc-700/80
+               border border-zinc-500/40
+               text-white
+               py-3 rounded-xl mt-5
+               transition duration-300"
+            >
+              <img src="/google-icon.png" alt="Google" className="w-5 h-5" />
+
+              <span className="text-sm font-medium">Continue with Google</span>
+            </button>
+
             {/* CREATE ACCOUNT */}
-            <p className="mt-5 text-center text-gray-700 text-sm">
-              Don’t have an account?{" "}
-              <Link href="/register" className="underline font-medium">
+            <p className="mt-5 text-left  text-gray-400 text-sm  ">
+              Don’t have an account?{"  "}
+              <Link
+                href="/web/auths/create-account"
+                className="underline font-medium"
+              >
                 Create One.
               </Link>
             </p>
