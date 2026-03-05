@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function ProfileImage() {
+export default function HostItem() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -15,39 +15,44 @@ export default function ProfileImage() {
   const [selectTimeline, setSelectTimeline] = useState("");
   const [description, setDescription] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [itemImages, setItemImages] = useState([]); // URLs for item images
+  const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState(null);
-
+  const [preview, setPreview] = useState(null); // for frontend preview
+  const [imageUrl, setImageUrl] = useState(null);
+  const [previewImages, setPreviewImages] = useState([]);
   const handleNext = async () => {
-  if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
-    return alert("Please fill all required fields");
-  }
+    if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
+      return alert("Please fill all required fields");
+    }
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  const res = await fetch("http://localhost:5000/host-items", {  
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      itemTitle,
-      selectCategory,
-      desiredNetPayout: Number(desiredNetPayout),
-      selectTimeline,
-      description,
-    }),
-  });
+    const res = await fetch("http://localhost:5000/host-items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        itemTitle,
+        selectCategory,
+        desiredNetPayout: Number(desiredNetPayout),
+        selectTimeline,
+        description,
+        images: itemImages,
+      }),
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!data.success) return alert(data.message || "Failed to create item");
+    if (!data.success) return alert(data.message || "Failed to create item");
 
-  // data.data has _id + calculations — save for page 2
-  localStorage.setItem("draftItem", JSON.stringify(data.data));
+    // data.data has _id + calculations — save for page 2
+    localStorage.setItem("draftItem", JSON.stringify(data.data));
 
-  router.push("/admin/Items/hostItem/hostItem2");
-};
+    router.push("/admin/Items/hostItem/hostItem2");
+  };
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -131,11 +136,52 @@ export default function ProfileImage() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setSelectedImage(data.imageUrl);
-    }
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+
+    // Create preview
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
   };
+
+  const handleItemImageUpload = async (e) => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+
+  setUploading(true);
+
+  try {
+    for (const file of files) {
+
+      // show preview
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewImages((prev) => [...prev, previewUrl]);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "host_items_preset");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.secure_url) {
+        setItemImages((prev) => [...prev, data.secure_url]);
+      }
+    }
+  } catch (err) {
+    console.error("Upload failed", err);
+  }
+
+  setUploading(false);
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
@@ -400,29 +446,38 @@ export default function ProfileImage() {
                 Item Images
               </label>
 
-              <div className="flex items-center gap-4">
-                <img
-                  src="/iphone.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
-                <img
-                  src="/iphone2.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
-                <img
-                  src="/iphone3.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
+              <div className="flex items-center gap-4 flex-wrap">
+                {itemImages.map((url, index) => (
+                  <div key={index} className="relative w-[120px] h-[120px]">
+                    <img
+                      src={url}
+                      alt={`Item ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setItemImages((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        )
+                      }
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
 
-                <button
-                  type="button"
-                  className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 transition-colors"
-                >
-                  + Add More
-                </button>
+                <label className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 cursor-pointer">
+                  {uploading ? "Uploading..." : "+ Add More"}
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleItemImageUpload}
+                  />
+                </label>
               </div>
             </div>
 
@@ -437,7 +492,7 @@ export default function ProfileImage() {
                   name="image"
                   onChange={handleFileChange} // preview handler
                   className="flex-1 text-sm text-gray-700
-                     file:mr-4 file:py-2 file:px-4
+                     file:mr-4 file:py-2 file:px-4  
                      file:rounded-md file:border-0
                      file:text-sm file:font-semibold
                      file:bg-gray-300 file:text-gray-800
@@ -454,15 +509,12 @@ export default function ProfileImage() {
               </form>
 
               {/* Image preview */}
-              {selectedImage && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className="max-w-xs max-h-60 object-contain border-none rounded-md"
-                  />
-                </div>
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="max-w-xs max-h-60 object-contain rounded-md"
+                />
               )}
             </div>
 

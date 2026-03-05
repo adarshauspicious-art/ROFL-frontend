@@ -94,7 +94,7 @@ export default function ProfileImage() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setSelectedImage(data.imageUrl);
+      setSelectedImage(URL.createObjectURL(selectedFile)); // 🔥 temporary preview
     }
   };
 
