@@ -21,11 +21,40 @@ export default function HostItem() {
   const [preview, setPreview] = useState(null); // for frontend preview
   const [imageUrl, setImageUrl] = useState(null);
   const [previewImages, setPreviewImages] = useState([]);
+  const [itemFiles, setItemFiles] = useState([]);
+
   const handleNext = async () => {
     if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
       return alert("Please fill all required fields");
     }
 
+    setUploading(true);
+    const uploadedImageUrls = [];
+
+    try {
+      for (const file of itemFiles) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "host_items_preset");
+
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
+          { method: "POST", body: formData },
+        );
+
+        const data = await res.json();
+        if (data.secure_url) uploadedImageUrls.push(data.secure_url);
+      }
+    } catch (err) {
+      console.error("Image upload failed", err);
+      alert("Failed to upload images");
+      setUploading(false);
+      return;
+    }
+
+    setUploading(false);
+
+    // Now send all data including image URLs to backend
     const token = localStorage.getItem("token");
 
     const res = await fetch("http://localhost:5000/host-items", {
@@ -40,17 +69,14 @@ export default function HostItem() {
         desiredNetPayout: Number(desiredNetPayout),
         selectTimeline,
         description,
-        images: itemImages,
+        images: uploadedImageUrls,
       }),
     });
 
     const data = await res.json();
-
     if (!data.success) return alert(data.message || "Failed to create item");
 
-    // data.data has _id + calculations — save for page 2
     localStorage.setItem("draftItem", JSON.stringify(data.data));
-
     router.push("/admin/Items/hostItem/hostItem2");
   };
 
@@ -145,43 +171,14 @@ export default function HostItem() {
     setPreview(objectUrl);
   };
 
-  const handleItemImageUpload = async (e) => {
-  const files = Array.from(e.target.files);
-  if (!files.length) return;
+  const handleItemImageSelection = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-  setUploading(true);
-
-  try {
-    for (const file of files) {
-
-      // show preview
-      const previewUrl = URL.createObjectURL(file);
-      setPreviewImages((prev) => [...prev, previewUrl]);
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "host_items_preset");
-
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.secure_url) {
-        setItemImages((prev) => [...prev, data.secure_url]);
-      }
-    }
-  } catch (err) {
-    console.error("Upload failed", err);
-  }
-
-  setUploading(false);
-};
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages((prev) => [...prev, ...newPreviews]);
+    setItemFiles((prev) => [...prev, ...files]); // ✅ now works
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
@@ -447,7 +444,7 @@ export default function HostItem() {
               </label>
 
               <div className="flex items-center gap-4 flex-wrap">
-                {itemImages.map((url, index) => (
+                {previewImages.map((url, index) => (
                   <div key={index} className="relative w-[120px] h-[120px]">
                     <img
                       src={url}
@@ -456,12 +453,14 @@ export default function HostItem() {
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setItemImages((prev) =>
+                      onClick={() => {
+                        setPreviewImages((prev) =>
                           prev.filter((_, i) => i !== index),
-                        )
-                      }
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                        );
+                        setItemFiles((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
+                      }}
                     >
                       &times;
                     </button>
@@ -469,20 +468,21 @@ export default function HostItem() {
                 ))}
 
                 <label className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 cursor-pointer">
-                  {uploading ? "Uploading..." : "+ Add More"}
+                  + Add More
                   <input
                     type="file"
                     multiple
                     accept="image/*"
                     className="hidden"
-                    onChange={handleItemImageUpload}
+                    onChange={handleItemImageSelection}
                   />
                 </label>
               </div>
             </div>
 
             {/* Image Upload */}
-            <div className="flex flex-col items-center gap-4">
+            
+            {/* <div className="flex flex-col items-center gap-4">
               <form
                 onSubmit={handleProfileImageUpload}
                 className="flex items-center justify-between gap-4 bg-gray-200 p-3 rounded-lg w-full max-w-md"
@@ -508,7 +508,7 @@ export default function HostItem() {
                 </button>
               </form>
 
-              {/* Image preview */}
+              {/* Image preview */} {/* 
               {preview && (
                 <img
                   src={preview}
@@ -516,7 +516,7 @@ export default function HostItem() {
                   className="max-w-xs max-h-60 object-contain rounded-md"
                 />
               )}
-            </div>
+            </div> */}
 
             <div className="flex justify-end mt-6">
               <button

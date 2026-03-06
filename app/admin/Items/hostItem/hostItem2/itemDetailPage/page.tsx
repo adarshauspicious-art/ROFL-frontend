@@ -12,7 +12,8 @@ export default function ProfileImage() {
   const [item, setItem] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
   const images = [];
-  // ✅ Auth check
+  const calc = item?.calculations || {};
+  //  AUTH CHECK
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (!user || user.role !== "admin") {
@@ -25,7 +26,7 @@ export default function ProfileImage() {
     if (!token) router.push("/login");
   }, [router]);
 
-  // ✅ Detect mobile screen
+  //  Detect mobile screen
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -33,7 +34,7 @@ export default function ProfileImage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ✅ LOAD ITEM FROM LOCALSTORAGE
+  //  LOAD ITEM FROM LOCALSTORAGE
   useEffect(() => {
     const draft = localStorage.getItem("draftItem");
 
@@ -286,74 +287,108 @@ export default function ProfileImage() {
             {/* Right side: Item details */}
             <div className="flex-1 flex flex-col justify-between">
               <div className="flex justify-between  mb-4">
-                <h2 className="text-2xl font-bold text-[#F2482D] drop-shadow-md">
-                  iPhone 17 Pro
+                <h2 className="text-2xl font-bold text-[#F2482D] login-title">
+                  {item?.itemTitle || "—"}
                 </h2>
-                <p className="w-20 py-2 flex justify-center border rounded-lg border-black text-black bg-[#E5F9EE] shadow-[3px_3px_0px_black] hover:text-black hover:shadow-[3px_3px_0px_gray]">
+                <p className="w-20 py-2 flex items-center justify-center border rounded-lg border-black text-black bg-[#E5F9EE] shadow-[3px_3px_0px_black] hover:text-black hover:shadow-[3px_3px_0px_gray]">
                   Live
                 </p>
               </div>
               <div className="bg-[#FEEDE7] rounded-xl px-6 py-4 mb-6 grid grid-cols-4 text-gray-600 text-lg font-medium">
                 <div>
-                  <p className="mt-1 text-bold text-black">
+                  <p className="mt-1 font-bold text-black">
                     Desired Net Payout
                   </p>
-                  <p className="text-[#F2482D] text-xl font-extrabold drop-shadow-md">
-                    $10,000
+                  <p className="text-[#F2482D] text-xl font-extrabold ">
+                    ${calc.desiredNetPayout?.toLocaleString() ?? "—"}
                   </p>
                 </div>
                 <div>
-                  <p className="mt-1 text-bold text-black ">Created</p>
-                  <p>Nov 28, 205</p>
+                  <p className="mt-1 font-bold text-black">Created</p>
+                  <p>
+                    {item?.createdAt
+                      ? new Date(item.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "—"}
+                  </p>
                 </div>
+
                 <div>
-                  <p className="mt-1 text-bold text-black">Ends</p>
-                  <p>Dec 5, 2025</p>
+                  <p className="mt-1 font-bold text-black">Ends</p>
+                  <p>
+                    {item?.endDate
+                      ? new Date(item.endDate).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "—"}
+                  </p>
                 </div>
+
                 <div>
-                  <p className="text-bold text-black">Listed By</p>
-                  <p className="mt-1">Seller</p>
+                  <p className="mt-1 font-bold text-black">Listed By</p>
+                  <p className="mt-1 text-bold">Seller</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-x-10 text-gray-700 text-lg mb-4">
                 <div>
                   <p className="text-gray-400 mt-1">Ticket Price</p>
-                  <p className="font-semibold">$50</p>
+                  <p className="font-semibold">
+                    ${calc.ticketPrice?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">Total Tickets</p>
-                  <p className="font-semibold">1440</p>
+                  <p className="font-semibold">
+                    {calc.totalTickets?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">Tickets Sold</p>
-                  <p className="font-semibold">842</p>
+                  <p className="font-semibold">
+                    {calc.ticketsSold?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-x-10 text-gray-700 text-lg mb-4">
                 <div>
                   <p className="text-gray-400 mt-1">Total Pot</p>
-                  <p className="font-semibold">$2,500</p>
+                  <p className="font-semibold">
+                    ${calc.totalPot?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">IRS Withholding</p>
-                  <p className="font-semibold">$2,500</p>
+                  <p className="font-semibold">
+                    ${calc.irsWithholding?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">Platform Fee</p>
-                  <p className="font-semibold">$1,440</p>
+                  <p className="font-semibold">
+                    ${calc.platformFee?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-x-10 text-gray-700 text-lg">
                 <div>
                   <p className="text-gray-400 mt-1">Processing Fee</p>
-                  <p className="font-semibold">$504</p>
+                  <p className="font-semibold">
+                    ${calc.processingFee?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">Seller Receives</p>
-                  <p className="font-semibold">$10,000</p>
+                  <p className="font-semibold">
+                    ${calc.sellerReceives?.toLocaleString() ?? "—"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">Proof With Prize</p>
@@ -421,7 +456,7 @@ export default function ProfileImage() {
                       />
                     </div>
                     <span className="text-white font-bold text-lg text-center     ">
-                      Winner Name
+                      No Winner Yet
                     </span>
                   </div>
                   <button className="bg-[#3a3a3a] text-white text-sm font-medium px-5 py-2 rounded-xl hover:bg-[#4a4a4a] transition-colors">
