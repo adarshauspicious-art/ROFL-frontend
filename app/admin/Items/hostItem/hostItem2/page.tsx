@@ -210,39 +210,39 @@ export default function HostItem2() {
                 {/* Right: Text info */}
                 <div className="flex-1">
                   {/* ✅ Item Title */}
-                  <h2 className="text-lg font-extrabold login-title mb-6">
+                  <h2 className="text-2xl font-extrabold login-title mb-6">
                     {item?.itemTitle || "—"}
                   </h2>
 
-                  <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm">
+                  <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-2xl">
 
                     {/* ✅ Total Spots */}
                     <div>
-                      <p className="text-base text-gray-600">Total Spots</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className=" text-gray-600 text-2xl" >Total Spots</p>
+                      <p className="font-semibold text- text-gray-900">
                         {calc.totalSpots ?? "—"}
                       </p>
                     </div>
 
                     {/* ✅ Desired Net Payout */}
                     <div>
-                      <p className="text-base text-gray-600">Desired Net Payout</p>
-                      <p className="font-semibold login-title text-xl">
+                      <p className=" text-gray-600">Desired Net Payout</p>
+                      <p className="font-semibold text-gray-900 text-orange-500">
                         ${calc.desiredNetPayout?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
                     {/* ✅ Total Pot */}
                     <div>
-                      <p className="text-base text-gray-600">Total Pot</p>
-                      <p className="text-gray-900">
+                      <p className=" text-gray-600">Total Pot</p>
+                      <p className="font-semibold text-gray-900">
                         ${calc.totalPot?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
                     {/* ✅ Ticket Price */}
                     <div>
-                      <p className="text-base text-gray-600">Ticket Price</p>
+                      <p className=" text-gray-600">Ticket Price</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.ticketPrice?.toLocaleString() ?? "—"}
                       </p>
@@ -250,7 +250,7 @@ export default function HostItem2() {
 
                     {/* ✅ Platform Fee */}
                     <div>
-                      <p className="text-base text-gray-600">Platform Fee</p>
+                      <p className=" text-gray-600">Platform Fee</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.platformFee?.toLocaleString() ?? "—"}
                       </p>
@@ -258,7 +258,7 @@ export default function HostItem2() {
 
                     {/* ✅ IRS Withholding */}
                     <div>
-                      <p className="text-base text-gray-600">IRS Withholding</p>
+                      <p className=" text-gray-600">IRS Withholding</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.irsWithholding?.toLocaleString() ?? "—"}
                       </p>
@@ -266,7 +266,7 @@ export default function HostItem2() {
 
                     {/* ✅ Processing Fee */}
                     <div>
-                      <p className="text-base text-gray-600">Processing Fee</p>
+                      <p className=" text-gray-600">Processing Fee</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.processingFee?.toLocaleString() ?? "—"}
                       </p>
