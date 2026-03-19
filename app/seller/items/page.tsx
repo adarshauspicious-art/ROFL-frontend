@@ -142,8 +142,8 @@ useEffect(() => {
                transition"
               />
             </div>
-            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/seller/Items/hostItem')}>
-              Host Item
+            <button className="mt-4 mb-2 px-6 text-white bg-gray-900 hover:bg-[#F2482D]  rounded-xl border border-black transition font-semibold flex items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]" onClick={()=>router.push('/seller/items/hostItem')}>
+              Host Item       
             </button>
           </div>
 
@@ -321,9 +321,9 @@ useEffect(() => {
                     <div className="flex justify-center">
                       <button
                         className="bg-blue-500 text-white px-3 py-1 rounded-md"
-                        onClick={() =>
-                          router.push("/sellers/activeSellers/activeDetail")
-                        }
+                        // onClick={() =>
+                        //   router.push("/seller/items/12345")
+                        // }
                       >
                         👁
                       </button>

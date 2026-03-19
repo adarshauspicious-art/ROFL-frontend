@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -34,10 +34,46 @@ export default function LoginPage() {
         if (data.user.role === "admin") {
           router.push("/admin/dashboard");
         } else if (data.user.role === "seller") {
-          router.push("/seller/dashboard");
+          if (!data.user.profileCompleted) {
+            router.push("/seller/onBoarding");
+          } else {
+            router.push("/seller/dashboard");
+          }
         } else {
           router.push("/");
         }
+        //   router.push("/seller/dashboard");
+        // } else {
+        //   router.push("/");
+        // }
+        // if (data.user.role === "admin") {
+        //   router.push("/admin/dashboard");
+        // } else if (data.user.role === "seller") {
+        //   // 🚨 STATUS CHECK
+        //   if (data.user.status === "pending") {
+        //     alert("Your account is waiting for admin approval.");
+        //     return;
+        //   }
+
+        //   if (data.user.status === "rejected") {
+        //     alert("Your account has been rejected.");
+        //     return;
+        //   }
+
+        //   if (data.user.status === "blocked") {
+        //     alert("Your account is blocked.");
+        //     return;
+        //   }
+
+        //   // ✅ FIRST LOGIN CHECK
+        //   if (!data.user.profileCompleted) {
+        //     router.push("/seller/onBoarding");
+        //   } else {
+        //     router.push("/seller/dashboard");
+        //   }
+        // } else {
+        //   router.push("/");
+        // }
       }
     } catch (error) {
       console.error("Error logging in:", error);

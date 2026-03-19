@@ -11,64 +11,47 @@ export default function OnBoarding() {
   const [uploading, setUploading] = useState(false);
 
   const handleNext = async () => {
-    // console.log("Form Data:", formData);
-
-    if (
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
-      !formData.phone
-      //   !formData.address ||
-      //   !formData.state ||
-      //   !formData.city ||
-      //   !formData.zip ||
-      //   !formData.govtidfront ||
-      //   !formData.govtidback ||
-      //   !formData.selfieholdingid
-    ) {
-      return alert("Please fill all required fields");
-    }
-
-    setUploading(true);
-
     try {
       console.log("Submitting data:", formData);
 
-    //   const res = await fetch("http://localhost:5000/seller/onBoarding", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     },
-    //     body: JSON.stringify(formData),
-    //   });
-    //   const data = await res.json();
-    //   console.log("Response from server:", data);
-    //   if (res.ok) {
-    //     router.push("/seller/onBoarding/Sucess");
-    //   }
+      const res = await fetch("http://localhost:5000/seller/onBoarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      console.log("Response from server:", data);
+
+      if (res.ok) {
+        router.push("/seller/onBoarding/Success");
+      } else {
+        alert(data.message || "Something went wrong");
+      }
     } catch (err) {
       console.error("Error:", err);
+      alert("Error submitting form");
     }
-
-    setUploading(false);
   };
 
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    businessname: "",
+    businessName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     address: "",
     state: "",
     city: "",
-    zip: "",
-    govtidfront: "",
-    govtidback: "",
-    selfieholdingid: "",
+    zipCode: "",
+    govtIdFront: "",
+    govtIdBack: "",
+    selfieWithId: "",
   });
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -440,6 +423,7 @@ export default function OnBoarding() {
           {/* Next Button */}
           <div className="flex justify-end mt-10 mr-2 mb-20  mr-10">
             <button
+              type="button"
               className="bg-[#F2482D] shadow-[3px_3px_0px_black] hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg"
               onClick={handleNext}
             >
