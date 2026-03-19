@@ -30,6 +30,10 @@ export default function ProfileImage() {
       return alert("Please fill all required fields");
     }
 
+    if (ownPrize && !prizeImage) {
+      throw new Error("Prize image required if you own the prize");
+    }
+
     setUploading(true);
     const uploadedImageUrls = [];
 
@@ -55,6 +59,21 @@ export default function ProfileImage() {
     }
 
     setUploading(false);
+    let prizeImageUrl = null;
+
+    if (ownPrize && prizeImage) {
+      const formData = new FormData();
+      formData.append("file", prizeImage);
+      formData.append("upload_preset", "host_items_preset");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
+        { method: "POST", body: formData },
+      );
+
+      const data = await res.json();
+      prizeImageUrl = data.secure_url;
+    }
 
     // Now send all data including image URLs to backend
     const token = localStorage.getItem("token");
@@ -72,6 +91,8 @@ export default function ProfileImage() {
         selectTimeline,
         description,
         images: uploadedImageUrls,
+        ownsPrize: ownPrize,
+        prizeImage: prizeImageUrl,
       }),
     });
 
@@ -501,37 +522,49 @@ export default function ProfileImage() {
             <div className="mt-6 flex items-center gap-3">
               <input
                 type="checkbox"
-                id="ownPrize"
                 checked={ownPrize}
-                onChange={(e) => setOwnPrize(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300"
+                onChange={(e) => {
+                  console.log("Checkbox clicked:", e.target.checked);
+                  setOwnPrize(e.target.checked);
+                }}
               />
+
               <label htmlFor="ownPrize" className="text-gray-700">
                 I own this prize
               </label>
             </div>
             {/* Select Image With Prize */}
-            <div className="mt-4 w-1/2">
-              <label className="block text-sm text-gray-700 mb-2">
-                Select Image with Prize
-              </label>
-
-              <div className="flex items-center justify-between border rounded-lg px-4 py-3 border-gray-300">
-                <span className="text-gray-400">
-                  {prizeImage ? prizeImage.name : "Select"}
-                </span>
-
-                <label className="cursor-pointer text-gray-500">
-                  📎
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => setPrizeImage(e.target.files[0])}
-                  />
+            {ownPrize && (
+              <div className="mt-4 w-1/2">
+                <label className="block text-sm text-gray-700 mb-2">
+                  Select Image with Prize
                 </label>
+
+                <div className="flex items-center justify-between border rounded-lg px-4 py-3 border-gray-300">
+                  <span className="text-gray-400">
+                    {prizeImage ? prizeImage.name : "Select"}
+                  </span>
+
+                  <label className="cursor-pointer text-gray-500">
+                    <Image
+                      src="/select.png"
+                      alt="Upload Icon"
+                      width={20}
+                      height={20}
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        console.log("Prize file selected:", e.target.files[0]);
+                        setPrizeImage(e.target.files[0]);
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="flex justify-end mt-6">

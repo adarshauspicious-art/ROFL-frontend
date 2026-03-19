@@ -30,50 +30,21 @@ export default function LoginPage() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        //  ROLE-BASED REDIRECT
-        if (data.user.role === "admin") {
-          router.push("/admin/dashboard");
-        } else if (data.user.role === "seller") {
-          if (!data.user.profileCompleted) {
-            router.push("/seller/onBoarding");
-          } else {
-            router.push("/seller/dashboard");
-          }
-        } else {
-          router.push("/");
-        }
-        //   router.push("/seller/dashboard");
-        // } else {
-        //   router.push("/");
-        // }
-        // if (data.user.role === "admin") {
-        //   router.push("/admin/dashboard");
-        // } else if (data.user.role === "seller") {
-        //   // 🚨 STATUS CHECK
-        //   if (data.user.status === "pending") {
-        //     alert("Your account is waiting for admin approval.");
-        //     return;
-        //   }
+       if (data.user.role === "admin") {
+  router.push("/admin/dashboard");
+} else if (data.user.role === "seller") {
+  const isCompleted = data.seller?.profileCompleted === true;
 
-        //   if (data.user.status === "rejected") {
-        //     alert("Your account has been rejected.");
-        //     return;
-        //   }
+  if (!isCompleted) {
+    router.push("/seller/onBoarding");
+  } else {
+    router.push("/seller/dashboard");
+  }
+} else {
+  router.push("/");
+}
 
-        //   if (data.user.status === "blocked") {
-        //     alert("Your account is blocked.");
-        //     return;
-        //   }
 
-        //   // ✅ FIRST LOGIN CHECK
-        //   if (!data.user.profileCompleted) {
-        //     router.push("/seller/onBoarding");
-        //   } else {
-        //     router.push("/seller/dashboard");
-        //   }
-        // } else {
-        //   router.push("/");
-        // }
       }
     } catch (error) {
       console.error("Error logging in:", error);

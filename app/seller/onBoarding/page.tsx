@@ -12,13 +12,22 @@ export default function OnBoarding() {
 
   const handleNext = async () => {
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login again");
+        router.push("/login");
+        return;
+      }
+
       console.log("Submitting data:", formData);
 
-      const res = await fetch("http://localhost:5000/seller/onBoarding", {
+      // Make API call
+      const res = await fetch("http://localhost:5000/api/seller/onBoarding", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -27,13 +36,14 @@ export default function OnBoarding() {
       console.log("Response from server:", data);
 
       if (res.ok) {
-        router.push("/seller/onBoarding/Success");
+        // Redirect to next page on success
+        router.push("/seller/onBoarding/Sucess");
       } else {
-        alert(data.message || "Something went wrong");
+        alert(data.message || "Something went wrong. Please try again.");
       }
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Error submitting form");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("An error occurred while submitting the form. Please try again.");
     }
   };
 
@@ -51,7 +61,7 @@ export default function OnBoarding() {
     govtIdBack: "",
     selfieWithId: "",
   });
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -300,8 +310,8 @@ export default function OnBoarding() {
                 <p className="text-gray-600">Business Name</p>
                 <input
                   type="text"
-                  name="businessname"
-                  value={formData.businessname}
+                  name="businessName"
+                  value={formData.businessName}
                   onChange={handleChange}
                   className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
                 />
@@ -323,8 +333,8 @@ export default function OnBoarding() {
                 <p className="text-gray-600">Phone Number</p>
                 <input
                   type="tel"
-                  name="phone"
-                  value={formData.phone}
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
                   onChange={handleChange}
                   className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
                 />
@@ -366,8 +376,8 @@ export default function OnBoarding() {
                 <p className="text-gray-600">Zip Code</p>
                 <input
                   type="text"
-                  name="zip"
-                  value={formData.zip}
+                  name="zipCode"
+                  value={formData.zipCode}
                   onChange={handleChange}
                   className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
                 />
@@ -387,8 +397,8 @@ export default function OnBoarding() {
                 <p className="text-gray-600">Govt ID ( Front )</p>
                 <input
                   type="text"
-                  name="govtidfront"
-                  value={formData.govtidfront}
+                  name="govtIdFront"
+                  value={formData.govtIdFront}
                   onChange={handleChange}
                   className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
                 />
@@ -397,8 +407,8 @@ export default function OnBoarding() {
                 <p className="text-gray-600">Govt ID ( Back )</p>
                 <input
                   type="text"
-                  name="govtidback"
-                  value={formData.govtidback}
+                  name="govtIdBack"
+                  value={formData.govtIdBack}
                   onChange={handleChange}
                   className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
                 />
@@ -411,8 +421,8 @@ export default function OnBoarding() {
                 <p className="text-gray-600">Selfie holding ID</p>
                 <input
                   type="text"
-                  name="selfieholdingid"
-                  value={formData.selfieholdingid}
+                  name="selfieWithId"
+                  value={formData.selfieWithId}
                   onChange={handleChange}
                   className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
                 />
