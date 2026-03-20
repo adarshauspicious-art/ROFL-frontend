@@ -275,6 +275,7 @@ useEffect(() => {
                     <button
                       className="w-9 h-9 flex items-center justify-center  rounded-lg bg-blue-500 text-white hover:bg-blue-600"
                       title="Approve"
+                      onClick={() => router.push("/admin/sellers/pendingApprovels/sucess/approve")}
                     >
                       ✓
                     </button>
@@ -282,6 +283,7 @@ useEffect(() => {
                     <button
                       className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#F2482D] text-white hover:bg-red-600"
                       title="Delete"
+                      onClick={() => router.push("/admin/sellers/pendingApprovels/sucess/reject")}
                     >
                       🗑
                     </button>

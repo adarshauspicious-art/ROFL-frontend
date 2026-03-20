@@ -331,7 +331,7 @@ export default function ProfileImage() {
 
                 <div>
                   <p className="mt-1 font-bold text-black">Listed By</p>
-                  <p className="mt-1 text-bold">Seller</p>
+                  <p className="mt-1 text-bold">Admin</p>
                 </div>
               </div>
 

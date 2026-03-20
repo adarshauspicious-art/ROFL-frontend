@@ -11,6 +11,8 @@ export default function ProfileImage() {
   const [preview, setPreview] = useState(null);
   const [item, setItem] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const images = [];
   const calc = item?.calculations || {};
   //  AUTH CHECK
@@ -62,6 +64,9 @@ export default function ProfileImage() {
   };
 
   const thumbnails = item?.images && item.images.length > 0 ? item.images : [];
+
+  console.log("calc:", calc);
+  console.log("prizeImage:", calc?.prizeImage);
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
       {/* Overlay for mobile */}
@@ -374,9 +379,34 @@ export default function ProfileImage() {
                 </div>
                 <div>
                   <p className="text-gray-400 mt-1">Proof With Prize</p>
-                  <p className="bg-gray-200 rounded-md px-2 py-1 text-xs inline-block">
-                    image.jpg
-                  </p>
+
+                  {item?.prizeImage ? (
+                    <>
+                      <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-gray-200 rounded-md px-2 py-2 text-xs inline-block hover:bg-gray-300 transition-colors"
+                      >
+                        image.jpg
+                      </button>
+
+                      {isModalOpen && (
+                        <div
+                          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                          onClick={() => setIsModalOpen(false)}
+                        >
+                          <div className="bg-white rounded-lg p-4 max-w-[90vw] max-h-[90vh]">
+                            <img
+                              src={item.prizeImage}
+                              alt="Prize"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p>No image</p>
+                  )}
                 </div>
               </div>
             </div>
