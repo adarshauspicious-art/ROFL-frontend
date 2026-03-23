@@ -25,26 +25,27 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
-
+      if (!response.ok) {
+        alert(data.message || "Email or password is invalid");
+        return;
+      }
       if (response.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-       if (data.user.role === "admin") {
-  router.push("/admin/dashboard");
-} else if (data.user.role === "seller") {
-  const isCompleted = data.seller?.profileCompleted === true;
+        if (data.user.role === "admin") {
+          router.push("/admin/dashboard");
+        } else if (data.user.role === "seller") {
+          const isCompleted = data.seller?.profileCompleted === true;
 
-  if (!isCompleted) {
-    router.push("/seller/onBoarding");
-  } else {
-    router.push("/seller/dashboard");
-  }
-} else {
-  router.push("/");
-}
-
-
+          if (!isCompleted) {
+            router.push("/seller/onBoarding");
+          } else {
+            router.push("/seller/dashboard");
+          }
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       console.error("Error logging in:", error);

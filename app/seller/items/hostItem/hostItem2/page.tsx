@@ -337,14 +337,22 @@ export default function HostItem2() {
 
               {/* Actions */}
               <div className="flex justify-between items-center mt-10">
-                <button className="text-base underline text-gray-600 hover:text-gray-900">
+                <button
+                  className=" underline text-gray-600 hover:text-gray-900"
+                  onClick={() => {
+                    router.push(
+                      "/seller/items/hostItem/hostItem2/scheduleItem",
+                    );
+                    console.log("Schedule Item clicked");
+                  }}
+                >
                   Schedule Item
                 </button>
                 <button
                   className="bg-[#F2482D] hover:bg-[#d13e22] shadow-[3px_3px_0px_black] text-white px-8 py-3 rounded-lg text-lg transition"
                   onClick={() => {
                     router.push(
-                      "/seller/items/hostItem/hostItem2/itemDetailPage",
+                      "/seller/items/hostItem/hostItem2/itemLive",
                     );
                   }}
                 >

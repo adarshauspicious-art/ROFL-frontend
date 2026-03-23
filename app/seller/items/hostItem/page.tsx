@@ -30,9 +30,11 @@ export default function ProfileImage() {
       return alert("Please fill all required fields");
     }
 
-    if (ownPrize && !prizeImage) {
-      throw new Error("Prize image required if you own the prize");
+    if (ownPrize) {
+    if (!prizeImage || (typeof prizeImage === "string" && prizeImage.trim() === "")) {
+        alert("Prize image required if you own the prize");
     }
+} 
 
     setUploading(true);
     const uploadedImageUrls = [];
