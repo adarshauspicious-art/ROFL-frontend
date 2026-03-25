@@ -16,8 +16,11 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [activeItems, setActiveItems] = useState([]);
+  const [winners, setWinners] = useState([]);
 
-   useEffect(() => {
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!user || user.role !== "admin") {
@@ -64,7 +67,27 @@ export default function DashboardPage() {
     { name: "Nov", value: 490 },
     { name: "Dec", value: 830 },
   ];
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/admin/dashboard", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
+        const data = await res.json();
+
+        setStats(data.stats);
+        setActiveItems(data.activeItems);
+        setWinners(data.winners || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
       {/* Overlay for mobile */}
@@ -254,25 +277,25 @@ export default function DashboardPage() {
             {[
               {
                 title: "Total Sellers",
-                value: "124",
+                value: stats?.totalSellers || 0,
                 subtitle: "Total verified sellers on the platform.",
                 icon: <FiUsers />,
               },
               {
                 title: "Live Items",
-                value: "38",
+                value: stats?.liveItems || 0,
                 subtitle: "Items currently active and selling tickets.",
                 icon: <FiShoppingBag />,
               },
               {
                 title: "Pending Approval",
-                value: "50",
+                value: stats?.pendingApprovals || 0,
                 subtitle: "Sellers waiting for identity verification.",
                 icon: <FiClock />,
               },
               {
                 title: "Winners This Month",
-                value: "48",
+                value: stats?.winnersThisMonth || 0,
                 subtitle: "Number of users who won this month.",
                 icon: <FiAward />,
               },
@@ -312,42 +335,59 @@ export default function DashboardPage() {
                   </thead>
 
                   <tbody>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_, i) => (
-                      <tr
-                        key={i}
-                        className="border-t text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
-                      >
-                        <td className="py-3">{i + 1}</td>
-                        <td>Name of Item</td>
-                        <td>Jan 24, 2025</td>
-                        <td>7 days</td>
-                        <td className="flex justify-center gap-3 py-3">
-                          <button
-                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#497BC6] text-white hover:bg-blue-600"
-                            title="View"
-                          >
-                            <Image
-                              src="/eyeC.png"
-                              alt="View"
-                              width={21}
-                              height={21}
-                            />
-                          </button>
+                    {activeItems?.length > 0 ? (
+                      activeItems.map((item, i) => (
+                        <tr
+                          key={item.id}
+                          className="border-t text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                          <td className="py-3">{item.srNo}</td>
+                          <td>{item.name}</td>
+                          <td>
+                            {new Date(item.startDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )}
+                          </td>
+                          <td>{item.timeline}</td>
+                          <td className="flex justify-center gap-3 py-3">
+                            <button
+                              className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#497BC6] text-white hover:bg-blue-600"
+                              title="View"
+                            >
+                              <Image
+                                src="/eyeC.png"
+                                alt="View"
+                                width={21}
+                                height={21}
+                              />
+                            </button>
 
-                          <button
-                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#4FA662] text-white hover:bg-green-600"
-                            title="Delete"
-                          >
-                            <Image
-                              src="/icon.png"
-                              alt="Delete"
-                              width={21}
-                              height={21}
-                            />
-                          </button>
+                            <button
+                              className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#4FA662] text-white hover:bg-green-600"
+                              title="Delete"
+                            >
+                              <Image
+                                src="/icon.png"
+                                alt="Delete"
+                                width={21}
+                                height={21}
+                              />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="text-center py-4">
+                          No active items
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -360,18 +400,7 @@ export default function DashboardPage() {
 
               <div className="max-h-96 overflow-y-auto bg-gray-50 ">
                 <ul className="text-black text-lg grid gap-y-3">
-                  {[
-                    "Alex Thompson",
-                    "Jordan Mitchell",
-                    "Taylor Johnson",
-                    "Jordan Smith",
-                    "Alexandra Brown",
-                    "Chris Williams",
-                    "Morgas Devis",
-                    "Chris Bottom",
-                    "Roman Reings",
-                    "Brock Lesnar",
-                  ].map((name, i) => {
+                  {winners.map((winner, i) => {
                     const getOrdinal = (n) => {
                       const s = ["th", "st", "nd", "rd"],
                         v = n % 100;
@@ -381,19 +410,12 @@ export default function DashboardPage() {
                     return (
                       <li
                         key={i}
-                        className="grid grid-cols-[50px_1fr_50px] items-center gap-3 p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors"
+                        className="grid grid-cols-[50px_1fr_50px] items-center"
                       >
-                        {/* Column 1: Number */}
-                        <span className="font-lg  ">{getOrdinal(i + 1)}</span>
+                        <span>{getOrdinal(i + 1)}</span>
+                        <span>{winner.name}</span>
 
-                        {/* Column 2: Name */}
-                        <span>{name}</span>
-
-                        {/* Column 3: Action */}
-                        <button
-                          className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#497BC6] text-white hover:bg-blue-600"
-                          title="Approve"
-                        >
+                        <button className="w-9 h-9 bg-[#497BC6] text-white rounded-lg">
                           <Image
                             src="/eyeC.png"
                             alt="View"
