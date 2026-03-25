@@ -13,37 +13,48 @@ export default function OnBoarding() {
   const handleNext = async () => {
     try {
       const token = localStorage.getItem("token");
-
       if (!token) {
         alert("Please login again");
         router.push("/login");
         return;
       }
 
-      console.log("Submitting data:", formData);
+      setUploading(true);
 
-      // Make API call
+      // Prepare FormData
+      const data = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (formData[key] !== null) {
+          data.append(key, formData[key]); // append File objects directly
+        }
+      });
+
       const res = await fetch("http://localhost:5000/api/seller/onBoarding", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Only auth header, no Content-Type
         },
-        body: JSON.stringify(formData),
+        body: data,
       });
 
-      const data = await res.json();
-      console.log("Response from server:", data);
+      const response = await res.json();
+      console.log("Response from server:", response);
 
       if (res.ok) {
-        // Redirect to next page on success
-        router.push("/seller/onBoarding/Sucess");
+        // ✅ Mark seller profile as completed in localStorage
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        user.profileCompleted = true;
+        localStorage.setItem("user", JSON.stringify(user));
+
+        router.push("/seller/onBoarding/Sucess"); // Success page
       } else {
-        alert(data.message || "Something went wrong. Please try again.");
+        alert(response.message || "Something went wrong. Please try again.");
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch (err) {
+      console.error("Error submitting form:", err);
       alert("An error occurred while submitting the form. Please try again.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -57,18 +68,28 @@ export default function OnBoarding() {
     state: "",
     city: "",
     zipCode: "",
+    govtIdFront: null,
+    govtIdBack: null,
+    selfieWithId: null,
+  });
+
+  const [preview, setPreview] = useState({
     govtIdFront: "",
     govtIdBack: "",
     selfieWithId: "",
   });
-
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (files) {
+      // If file input, store the file object and create preview URL
+      const file = files[0];
+      setFormData((prev) => ({ ...prev, [name]: file }));
+      setPreview((prev) => ({ ...prev, [name]: URL.createObjectURL(file) }));
+    } else {
+      // Normal text input
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   useEffect(() => {
@@ -389,29 +410,43 @@ export default function OnBoarding() {
 
           {/*First rom */}
           <h2 className="p-3 text-lg font-semibold mb-3 mt-10 text-black  ">
-            Verification Proof
+            Upload Verification Proof
           </h2>
           <div className="p-3 bg-white rounded-xl shadow p-5 shadow text-gray-800 ">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="px-2 py-2">
-                <p className="text-gray-600">Govt ID ( Front )</p>
+                <p className="text-gray-600">Government ID ( Front )</p>
                 <input
-                  type="text"
+                  type="file"
                   name="govtIdFront"
-                  value={formData.govtIdFront}
+                  accept="image/*"
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
+                  className="w-full border border-gray-300 rounded-lg p-2"
                 />
+                {preview.govtIdFront && (
+                  <img
+                    src={preview.govtIdFront}
+                    alt="Govt ID Front Preview"
+                    className="mt-2 max-h-48 rounded"
+                  />
+                )}
               </div>
               <div className="px-2 py-2">
-                <p className="text-gray-600">Govt ID ( Back )</p>
+                <p className="text-gray-600">Government ID ( Back )</p>
                 <input
-                  type="text"
+                  type="file"
                   name="govtIdBack"
-                  value={formData.govtIdBack}
+                  accept="image/*"
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
+                  className="w-full border border-gray-300 rounded-lg p-2"
                 />
+                {preview.govtIdBack && (
+                  <img
+                    src={preview.govtIdBack}
+                    alt="Govt ID Back Preview"
+                    className="mt-2 max-h-48 rounded"
+                  />
+                )}
               </div>
             </div>
 
@@ -420,12 +455,19 @@ export default function OnBoarding() {
               <div className="px-2 py-2">
                 <p className="text-gray-600">Selfie holding ID</p>
                 <input
-                  type="text"
+                  type="file"
                   name="selfieWithId"
-                  value={formData.selfieWithId}
+                  accept="image/*"
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-lg pl-2 py-4 w-3/3 focus:outline-none focus:ring-2 focus:ring-[#F2482D] focus:border-transparent ml-2"
+                  className="w-full border border-gray-300 rounded-lg p-2"
                 />
+                {preview.selfieWithId && (
+                  <img
+                    src={preview.selfieWithId}
+                    alt="Selfie Preview"
+                    className="mt-2 max-h-48 rounded"
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -434,10 +476,11 @@ export default function OnBoarding() {
           <div className="flex justify-end mt-10 mr-2 mb-20  mr-10">
             <button
               type="button"
-              className="bg-[#F2482D] shadow-[3px_3px_0px_black] hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg"
               onClick={handleNext}
+              disabled={uploading}
+              className="bg-[#F2482D] text-white px-6 py-2 rounded-lg shadow hover:shadow-md"
             >
-              Next →
+              {uploading ? "Uploading..." : "Submit"}
             </button>
           </div>
         </div>

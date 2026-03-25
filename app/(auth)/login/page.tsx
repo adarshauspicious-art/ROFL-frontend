@@ -25,27 +25,35 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
+
       if (!response.ok) {
         alert(data.message || "Email or password is invalid");
         return;
       }
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
 
-        if (data.user.role === "admin") {
-          router.push("/admin/dashboard");
-        } else if (data.user.role === "seller") {
-          const isCompleted = data.seller?.profileCompleted === true;
+      // Store token and user in localStorage
+      localStorage.setItem("token", data.token);
 
-          if (!isCompleted) {
-            router.push("/seller/onBoarding");
-          } else {
-            router.push("/seller/dashboard");
-          }
+      // Ensure seller info is included in user object
+      const userData = {
+        ...data.user,
+        profileCompleted: data.user.profileCompleted || false, // 🔹 onboarding submit flag
+        status: data.seller?.status || "Pending", // 🔹 admin ka status
+      };
+
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      // Redirect
+      if (userData.role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (userData.role === "seller") {
+        if (!userData.profileCompleted) {
+          router.push("/seller/onBoarding"); // sirf tab onboarding
         } else {
-          router.push("/");
+          router.push("/seller/dashboard"); // submit ke baad dashboard
         }
+      } else {
+        router.push("/");
       }
     } catch (error) {
       console.error("Error logging in:", error);

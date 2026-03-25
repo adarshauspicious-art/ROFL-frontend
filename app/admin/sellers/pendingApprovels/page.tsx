@@ -11,20 +11,22 @@ export default function DashboardPage() {
   const [query, setQuery] = useState("");
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [loading, setLoading] = useState(true);
-interface Seller {
-  _id: string;
-  userId: {
-    name: string;
-    email: string;
-    role: string;
-  };
-  createdAt: string;
-  attachment?: {
-    govtIdFront?: string;
-    govtIdBack?: string;
-    selfieWithId?: string;
-  };
-}
+  const [openAttachment, setOpenAttachment] = useState(null);
+  interface Seller {
+    id: string;
+    _id: string;
+    userId: {
+      name: string;
+      email: string;
+      role: string;
+    };
+    createdAt: string;
+    attachment?: {
+      govtIdFront?: string;
+      govtIdBack?: string;
+      selfieWithId?: string;
+    };
+  }
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -51,14 +53,17 @@ interface Seller {
   useEffect(() => {
     const fetchSellers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/admin/sellers", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        const res = await fetch(
+          "http://localhost:5000/api/admin/sellers/pending-approvals",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
           },
-          credentials: "include",
-        });
+        );
 
         const data = await res.json();
         setSellers(data.sellers); // adjust based on your API response
@@ -79,7 +84,38 @@ interface Seller {
     });
     localStorage.removeItem("token");
     router.push("/login");
+  };
+  const handleOpen = (attachment) => {
+    setOpenAttachment(attachment);
+  };
 
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    if (!id) {
+      console.error("Seller ID is missing!");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admin/sellers/${id}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        setSellers(prev => prev.filter(s => s.id !== id)); // remove from UI
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   return (
@@ -336,47 +372,74 @@ interface Seller {
                 >
                   <p>{seller.name}</p>
                   <p>{seller.email}</p>
-                  <p>{new Date(seller.createdAt).toLocaleDateString()}</p>
+                  <p>{new Date(seller.createdAt).toLocaleDateString()} </p>
+
                   <div className="flex gap-2">
                     {seller.attachment?.govtIdFront && (
-                      <a
-                        href={seller.attachment.govtIdFront}
-                        target="_blank"
+                      <button
+                        onClick={() =>
+                          handleOpen(seller.attachment.govtIdFront)
+                        }
                         className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
                       >
                         ID Front
-                      </a>
+                      </button>
                     )}
 
                     {seller.attachment?.govtIdBack && (
-                      <a
-                        href={seller.attachment.govtIdBack}
-                        target="_blank"
+                      <button
+                        onClick={() => handleOpen(seller.attachment.govtIdBack)}
                         className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
                       >
                         ID Back
-                      </a>
+                      </button>
                     )}
 
                     {seller.attachment?.selfieWithId && (
-                      <a
-                        href={seller.attachment.selfieWithId}
-                        target="_blank"
+                      <button
+                        onClick={() =>
+                          handleOpen(seller.attachment.selfieWithId)
+                        }
                         className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
                       >
                         Selfie
-                      </a>
+                      </button>
                     )}
                   </div>
+
+                  {/* Modal */}
+                  {openAttachment && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                      <div className="bg-white p-4 rounded-lg max-w-lg w-full relative">
+                        <button
+                          onClick={() => setOpenAttachment(null)}
+                          className="absolute top-2 right-2 text-gray-500"
+                        >
+                          ✕
+                        </button>
+
+                        {/* Display image if URL ends with image extension */}
+                        {/\.(jpg|jpeg|png|gif|webp)$/i.test(openAttachment) ? (
+                          <img
+                            src={openAttachment}
+                            alt="attachment"
+                            className="max-h-96 mx-auto"
+                          />
+                        ) : (
+                          <pre className="whitespace-pre-wrap break-all">
+                            {openAttachment}
+                          </pre>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/*Actions*/}
                   <div className="flex justify-center gap-3">
                     <button
                       className="w-9 h-9 flex items-center justify-center  rounded-lg bg-blue-500 text-white hover:bg-blue-600"
                       title="Approve"
-                      onClick={() =>
-                        router.push(`/admin/sellers/${seller._id}/reject`)
-                      }
+                      onClick={() => handleStatusChange(seller.id, "Approved")}
                     >
                       ✓
                     </button>
@@ -384,9 +447,7 @@ interface Seller {
                     <button
                       className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#F2482D] text-white hover:bg-red-600"
                       title="Delete"
-                      onClick={() =>
-                        router.push(`/admin/sellers/${seller._id}/reject`)
-                      }
+                      onClick={() => handleStatusChange(seller.id, "Rejected")}
                     >
                       🗑
                     </button>
