@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -9,13 +9,34 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
-useEffect(() => {
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openAttachment, setOpenAttachment] = useState(null);
+  interface Seller {
+    email: ReactNode;
+    name: ReactNode;
+    id: string;
+    _id: string;
+    userId: {
+      name: string;
+      email: string;
+      role: string;
+    };
+    createdAt: string;
+    attachment?: {
+      govtIdFront?: string;
+      govtIdBack?: string;
+      selfieWithId?: string;
+    };
+  }
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!user || user.role !== "admin") {
-        router.push("/login");
+      router.push("/login");
     }
-}, []);
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -28,13 +49,75 @@ useEffect(() => {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const toggleSidebar = () => setIsOpen(prev => !prev);
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
   const closeSidebar = () => isMobile && setIsOpen(false);
 
+  useEffect(() => {
+    const fetchSellers = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/admin/sellers/pending-approvals",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+          },
+        );
+
+        const data = await res.json();
+        setSellers(data.sellers); // adjust based on your API response
+      } catch (err) {
+        console.error("Error fetching sellers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSellers();
+  }, []);
+
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/logout", { method: "POST", credentials: "include" });
+    await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
     localStorage.removeItem("token");
     router.push("/login");
+  };
+  const handleOpen = (attachment: string | SetStateAction<null> | undefined) => {
+    setOpenAttachment(attachment);
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    if (!id) {
+      console.error("Seller ID is missing!");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admin/sellers/${id}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        setSellers(prev => prev.filter(s => s.id !== id)); // remove from UI
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   return (
@@ -51,17 +134,17 @@ useEffect(() => {
       <div
         className={`fixed top-0 left-0 h-screen bg-white p-2 shadow-lg rounded-r-2xl border border-gray-300 z-50
         transition-transform duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)]
-        ${isMobile
+        ${
+          isMobile
             ? isOpen
               ? "translate-x-0 w-[280px]"
               : "-translate-x-full w-[280px]"
             : isOpen
               ? "translate-x-0 w-[300px]"
               : "translate-x-0 w-[80px]"
-          }`}
+        }`}
       >
         <aside className="relative text-black">
-
           {/* Header */}
           <div className="flex items-center justify-between mb-6 mt-2 mr-2">
             <Image
@@ -85,15 +168,43 @@ useEffect(() => {
           {/* Menu */}
           <ul className="mt-4 space-y-2">
             {[
-              { label: "Dashboard", icon: "/dashboard.png", route: "/admin/dashboard" },
-              { label: "Sellers", icon: "/user_logo.png", route: "/admin/sellers/activeSellers" },
+              {
+                label: "Dashboard",
+                icon: "/dashboard.png",
+                route: "/admin/dashboard",
+              },
+              {
+                label: "Sellers",
+                icon: "/user_logo.png",
+                route: "/admin/sellers/activeSellers",
+              },
               { label: "Items", icon: "/Items.svg", route: "/admin/Items" },
-              { label: "Users", icon: "/user_logo.png",route:"/admin/users"  },
-              { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/admin/winners" },
-              { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway" },
-              { label: "Disputes", icon: "/disputes.svg" , route: "/admin/disputes"},
-              { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-              { label: "Manage Banners", icon: "/banners.svg" , route: "/admin/banners" },
+              { label: "Users", icon: "/user_logo.png", route: "/admin/users" },
+              {
+                label: "Winners & Fulfillment",
+                icon: "/winners.svg",
+                route: "/admin/winners",
+              },
+              {
+                label: "Weekly Giveaway",
+                icon: "/gift.svg",
+                route: "/admin/giveaway",
+              },
+              {
+                label: "Disputes",
+                icon: "/disputes.svg",
+                route: "/admin/disputes",
+              },
+              {
+                label: "Revenue Overview",
+                icon: "/revenue.svg",
+                route: "/admin/overview",
+              },
+              {
+                label: "Manage Banners",
+                icon: "/banners.svg",
+                route: "/admin/banners",
+              },
             ].map((item, i) => (
               <li
                 key={i}
@@ -107,8 +218,15 @@ useEffect(() => {
                 hover:shadow-[3px_3px_0px_black]
                 ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
               >
-                <Image src={item.icon} alt={item.label} width={25} height={25} />
-                <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+                <Image
+                  src={item.icon}
+                  alt={item.label}
+                  width={25}
+                  height={25}
+                />
+                <span
+                  className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+                >
                   {item.label}
                 </span>
               </li>
@@ -125,26 +243,26 @@ useEffect(() => {
               ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
             >
               <Image src="/logout.png" alt="Logout" width={25} height={25} />
-              <span className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+              <span
+                className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+              >
                 Logout
               </span>
             </li>
           </ul>
-
         </aside>
       </div>
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex  justify-center transition-all duration-500 ${!isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
-          }`}
+        className={`flex-1 flex  justify-center transition-all duration-500 ${
+          !isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
+        }`}
       >
         <div className="w-full  ">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">
-              Sellers
-            </h1>
+            <h1 className="text-3xl login-title">Sellers</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -181,7 +299,6 @@ useEffect(() => {
                     />
                   </p>
                 </div>
-
               </div>
             </div>
           </div>
@@ -190,22 +307,27 @@ useEffect(() => {
 
           <div className="w-full w-full inline-flex gap-6">
             <div className="w-full inline-flex gap-6 ml-5 h-20 ">
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/admin/sellers/activeSellers")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/admin/sellers/activeSellers")}
+              >
                 Active Sellers
               </button>
 
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/admin/sellers/pendingApprovels")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/admin/sellers/pendingApprovels")}
+              >
                 Pending Approval
               </button>
 
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/admin/sellers/blockedSellers")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/admin/sellers/blockedSellers")}
+              >
                 Blocked Sellers
               </button>
             </div>
-
 
             <div className="relative mt-4 mr-5 w-max-full ">
               {/* Search Icon */}
@@ -234,10 +356,8 @@ useEffect(() => {
           {/* Sellers List Section */}
 
           <div className="w-full bg-white mt-10 rounded-xl shadow-md p-6">
-
             {/* Table Header */}
             <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-
               <p>Seller Name</p>
               <p>Email</p>
               <p>Submitted</p>
@@ -247,34 +367,81 @@ useEffect(() => {
 
             {/* Table Rows */}
             <div className="mt-3">
-
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+              {sellers.map((seller, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-5 px-5 py-4 text-sm text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                 >
+                  <p>{seller.name}</p>
+                  <p>{seller.email}</p>
+                  <p>{new Date(seller.createdAt).toLocaleDateString()}</p>
 
-                  <p>Name of Item</p>
-                  <p>jan24@example.com</p>
-                  <p>January 24, 2025</p>
                   <div className="flex gap-2">
-                    <span className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300">
-                      ID Front
-                    </span>
-                    <span className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300">
-                      ID Back
-                    </span>
-                    <span className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300">
-                      Selfie
-                    </span>
+                    {seller.attachment?.govtIdFront && (
+                      <button
+                        onClick={() =>
+                          handleOpen(seller.attachment?.govtIdFront)
+                        }
+                        className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
+                      >
+                        ID Front
+                      </button>
+                    )}
+
+                    {seller.attachment?.govtIdBack && (
+                      <button
+                        onClick={() => handleOpen(seller.attachment?.govtIdBack)}
+                        className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
+                      >
+                        ID Back
+                      </button>
+                    )}
+
+                    {seller.attachment?.selfieWithId && (
+                      <button
+                        onClick={() =>
+                          handleOpen(seller.attachment?.selfieWithId)
+                        }
+                        className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
+                      >
+                        Selfie
+                      </button>
+                    )}
                   </div>
+
+                  {/* Modal */}
+                  {openAttachment && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                      <div className="bg-white p-4 rounded-lg max-w-lg w-full relative">
+                        <button
+                          onClick={() => setOpenAttachment(null)}
+                          className="absolute top-2 right-2 text-gray-500"
+                        >
+                          ✕
+                        </button>
+
+                        {/* Display image if URL ends with image extension */}
+                        {/\.(jpg|jpeg|png|gif|webp)$/i.test(openAttachment) ? (
+                          <img
+                            src={openAttachment}
+                            alt="attachment"
+                            className="max-h-96 mx-auto"
+                          />
+                        ) : (
+                          <pre className="whitespace-pre-wrap break-all">
+                            {openAttachment}
+                          </pre>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/*Actions*/}
                   <div className="flex justify-center gap-3">
-
                     <button
                       className="w-9 h-9 flex items-center justify-center  rounded-lg bg-blue-500 text-white hover:bg-blue-600"
                       title="Approve"
+                      onClick={() => handleStatusChange(seller.id, "Approved")}
                     >
                       ✓
                     </button>
@@ -282,14 +449,13 @@ useEffect(() => {
                     <button
                       className="w-9 h-9 flex items-center justify-center rounded-lg bg-[#F2482D] text-white hover:bg-red-600"
                       title="Delete"
+                      onClick={() => handleStatusChange(seller.id, "Rejected")}
                     >
                       🗑
                     </button>
-
                   </div>
                 </div>
               ))}
-
             </div>
 
             {/* Pagination */}
@@ -305,11 +471,7 @@ useEffect(() => {
                 </button>
               </div>
             </div>
-
           </div>
-
-
-
         </div>
       </div>
     </div>

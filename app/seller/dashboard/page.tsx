@@ -15,16 +15,16 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [seller, setSeller] = useState(null);
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  if (!token || !user || user.role !== "seller") {
-    router.push("/login");
-  }
-}, []);
-  
+    if (!token || !user || user.role !== "seller") {
+      router.push("/login");
+    }
+  }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -60,6 +60,32 @@ useEffect(() => {
     { name: "Nov", value: 490 },
     { name: "Dec", value: 830 },
   ];
+
+  useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/seller/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const data = await res.json();
+        setSeller(data.seller);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchSeller();
+  }, []);
+
+  const verificationStatus =
+    seller?.status === "Approved"
+      ? "Verified ✅"
+      : seller?.status === "Rejected"
+        ? "Rejected ❌"
+        : "Not Yet Verified ⏳";
 
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
@@ -115,17 +141,16 @@ useEffect(() => {
                 route: "/seller/dashboard",
               },
 
-              { label: "Items",
-                icon: "/items.svg",
-                 route: "/seller/items"
+              { label: "Items", icon: "/items.svg", route: "/seller/items" },
+              {
+                label: "Orders & Shipping",
+                icon: "/gift.svg",
+                route: "/seller/order-shipping",
               },
-              { label: "Orders & Shipping",
-                 icon: "/gift.svg",
-                  route: "/seller/order-shipping"
-              },
-              { label: "Payouts ",
+              {
+                label: "Payouts ",
                 icon: "/revenue.svg",
-                route: "/seller/payouts"
+                route: "/seller/payouts",
               },
 
               {
@@ -233,8 +258,7 @@ useEffect(() => {
             {[
               {
                 title: "Verification",
-
-                value: "Not Yet Verified",
+                value: verificationStatus,
               },
               {
                 title: "Active Listings",

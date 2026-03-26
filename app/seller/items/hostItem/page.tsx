@@ -9,18 +9,113 @@ export default function ProfileImage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
-
+  const [itemTitle, setItemTitle] = useState("");
+  const [selectCategory, setSelectCategory] = useState("");
+  const [desiredNetPayout, setDesiredNetPayout] = useState("");
+  const [selectTimeline, setSelectTimeline] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [itemImages, setItemImages] = useState([]); // URLs for item images
+  const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null); // for frontend preview
+  const [imageUrl, setImageUrl] = useState(null);
+  const [previewImages, setPreviewImages] = useState([]);
+  const [itemFiles, setItemFiles] = useState([]);
+  const [ownPrize, setOwnPrize] = useState(false);
+  const [prizeImage, setPrizeImage] = useState(null);
+
+  const handleNext = async () => {
+    if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
+      return alert("Please fill all required fields");
+    }
+
+    if (ownPrize) {
+    if (!prizeImage || (typeof prizeImage === "string" && prizeImage.trim() === "")) {
+        alert("Prize image required if you own the prize");
+    }
+} 
+
+    setUploading(true);
+    const uploadedImageUrls = [];
+
+    try {
+      for (const file of itemFiles) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "host_items_preset");
+
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
+          { method: "POST", body: formData },
+        );
+
+        const data = await res.json();
+        if (data.secure_url) uploadedImageUrls.push(data.secure_url);
+      }
+    } catch (err) {
+      console.error("Image upload failed", err);
+      alert("Failed to upload images");
+      setUploading(false);
+      return;
+    }
+
+    setUploading(false);
+    let prizeImageUrl = null;
+
+    if (ownPrize && prizeImage) {
+      const formData = new FormData();
+      formData.append("file", prizeImage);
+      formData.append("upload_preset", "host_items_preset");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
+        { method: "POST", body: formData },
+      );
+
+      const data = await res.json();
+      prizeImageUrl = data.secure_url;
+    }
+
+    // Now send all data including image URLs to backend
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://localhost:5000/host-items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        itemTitle,
+        selectCategory,
+        desiredNetPayout: Number(desiredNetPayout),
+        selectTimeline,
+        description,
+        images: uploadedImageUrls,
+        ownsPrize: ownPrize,
+        prizeImage: prizeImageUrl,
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.success) return alert(data.message || "Failed to create item");
+
+    localStorage.setItem("draftItem", JSON.stringify(data.data));
+    router.push("/seller/items/hostItem/hostItem2");
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    if (!token || !user || user.role !== "seller") {
+    if (!user || user.role !== "seller") {
       router.push("/login");
     }
   }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) router.push("/login");
+  }, [router]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -92,10 +187,22 @@ export default function ProfileImage() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setSelectedImage(data.imageUrl);
-    }
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+
+    // Create preview
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+  };
+
+  const handleItemImageSelection = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages((prev) => [...prev, ...newPreviews]);
+    setItemFiles((prev) => [...prev, ...files]); // ✅ now works
   };
 
   return (
@@ -282,76 +389,102 @@ export default function ProfileImage() {
           {/* ================= FORM ================= */}
           <div className="bg-white rounded-xl shadow p-5 shadow text-gray-800 mt-6">
             <h2 className="text-lg font-semibold mb-4">Basic Details</h2>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-7 ">
               <input
                 placeholder="Item Title"
+                value={itemTitle}
+                onChange={(e) => setItemTitle(e.target.value)}
                 className="border rounded-lg p-3 border border-gray-300"
               />
 
-              <select className="border rounded-lg p-4 border border-gray-300">
-                <option>Select Category</option>
-                <option>Select Category1</option>
-                <option>Select Category2</option>
-                <option>Select Category3</option>
-                <option>Select Category4</option>
-                <option>Select Category5</option>
+              <select
+                value={selectCategory}
+                onChange={(e) => setSelectCategory(e.target.value)}
+                className="border rounded-lg p-4 border border-gray-300"
+              >
+                <option value="">Select Category</option>
+                <option>Tech & Electronics</option>
+                <option>Luxury Goods</option>
+                <option>Vechiles & Transportation</option>
+                <option>Fashion & Apparel</option>
+                <option>Home & Appliances</option>
+                <option>Sports & Outdoors</option>
+                <option>Collecteibles & Hobbies</option>
+                <option>Beauty & Health</option>
+                <option>Experiences & Services</option>
+                <option>Gift Cards</option>
               </select>
 
               <input
                 placeholder="Desired Net Payout"
+                value={desiredNetPayout}
+                onChange={(e) => setDesiredNetPayout(e.target.value)}
+                type="number"
                 className="border rounded-lg p-4 border border-gray-300"
               />
 
-              <select className="border rounded-lg p-3 border border-gray-300">
-                <option>Select Timeline</option>
-                <option>Select Timeline1</option>
-                <option>Select Timeline2</option>
-                <option>Select Timeline3</option>
-                <option>Select Timeline4</option>
-                <option>Select Timeline5</option>
+              <select
+                value={selectTimeline}
+                onChange={(e) => setSelectTimeline(e.target.value)}
+                className="border rounded-lg p-3 border border-gray-300"
+              >
+                <option value="">Select Timeline</option>
+                <option>7 Days</option>
+                <option>15 Days</option>
+                <option>21 Days</option>
+                <option>30 Days</option>
               </select>
             </div>
-
             <textarea
               placeholder="Description"
-              className="border rounded-lg p-3 w-full mt-4 border border-gray-300 "
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="border rounded-lg p-3 w-full mt-4 border border-gray-300"
               rows={4}
             />
-
             <div className="mt-4">
               <label className="block text-sm font-semibold mb-2 text-gray-700">
                 Item Images
               </label>
 
-              <div className="flex items-center gap-4">
-                <img
-                  src="/iphone.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
-                <img
-                  src="/iphone2.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
-                <img
-                  src="/iphone3.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
+              <div className="flex items-center gap-4 flex-wrap">
+                {previewImages.map((url, index) => (
+                  <div key={index} className="relative w-[120px] h-[120px]">
+                    <img
+                      src={url}
+                      alt={`Item ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreviewImages((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
+                        setItemFiles((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
+                      }}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
 
-                <button
-                  type="button"
-                  className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 transition-colors"
-                >
+                <label className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 cursor-pointer">
                   + Add More
-                </button>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleItemImageSelection}
+                  />
+                </label>
               </div>
             </div>
-
             {/* Image Upload */}
-            <div className="flex flex-col items-center gap-4">
+            {/* <div className="flex flex-col items-center gap-4">
               <form
                 onSubmit={handleProfileImageUpload}
                 className="flex items-center justify-between gap-4 bg-gray-200 p-3 rounded-lg w-full max-w-md"
@@ -361,7 +494,7 @@ export default function ProfileImage() {
                   name="image"
                   onChange={handleFileChange} // preview handler
                   className="flex-1 text-sm text-gray-700
-                     file:mr-4 file:py-2 file:px-4
+                     file:mr-4 file:py-2 file:px-4  
                      file:rounded-md file:border-0
                      file:text-sm file:font-semibold
                      file:bg-gray-300 file:text-gray-800
@@ -377,27 +510,72 @@ export default function ProfileImage() {
                 </button>
               </form>
 
-              {/* Image preview */}
-              {selectedImage && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className="max-w-xs max-h-60 object-contain border-none rounded-md"
-                  />
-                </div>
+              {/* Image preview */}{" "}
+            {/* 
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="max-w-xs max-h-60 object-contain rounded-md"
+                />
               )}
-            </div>
+            </div> */}
+            {/* Ownership Checkbox */}
+            <div className="mt-6 flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={ownPrize}
+                onChange={(e) => {
+                  console.log("Checkbox clicked:", e.target.checked);
+                  setOwnPrize(e.target.checked);
+                }}
+              />
 
-            <div className="flex justify-end mt-6">
-              <button
-                className="bg-[#F2482D]  hover:bg-[#F2482D] shadow-[3px_3px_0px_black] hover:text-white hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg"
-                onClick={() => router.push("/seller/Items/hostItem/hostItem2")}
-              >
-                Next →
-              </button>
+              <label htmlFor="ownPrize" className="text-gray-700">
+                I own this prize
+              </label>
             </div>
+            {/* Select Image With Prize */}
+            {ownPrize && (
+              <div className="mt-4 w-1/2">
+                <label className="block text-sm text-gray-700 mb-2">
+                  Select Image with Prize
+                </label>
+
+                <div className="flex items-center justify-between border rounded-lg px-4 py-3 border-gray-300">
+                  <span className="text-gray-400">
+                    {prizeImage ? prizeImage.name : "Select"}
+                  </span>
+
+                  <label className="cursor-pointer text-gray-500">
+                    <Image
+                      src="/select.png"
+                      alt="Upload Icon"
+                      width={20}
+                      height={20}
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        console.log("Prize file selected:", e.target.files[0]);
+                        setPrizeImage(e.target.files[0]);
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              className="bg-[#F2482D] shadow-[3px_3px_0px_black] hover:shadow-[3px_1px_0px_gray] text-white px-6 py-2 rounded-lg"
+              onClick={handleNext}
+            >
+              Next →
+            </button>
           </div>
         </div>
       </div>
