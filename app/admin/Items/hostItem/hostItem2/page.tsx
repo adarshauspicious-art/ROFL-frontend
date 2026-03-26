@@ -11,7 +11,7 @@ export default function HostItem2() {
 
   // ✅ Item state from localStorage
   const [item, setItem] = useState(null);
-  const [activeImage, setActiveImage] = useState("/iphone.png");
+  const [activeImage, setActiveImage] = useState(null);
 
   // Auth check
   useEffect(() => {
@@ -59,10 +59,22 @@ export default function HostItem2() {
   const calc = item?.calculations || {};
 
   // ✅ Thumbnails: use real images or fallback
-  const thumbnails =
-    item?.images && item.images.length > 0
-      ? item.images
-      : ["/iphone.png", "/iphone2.png", "/iphone3.png", "/iphone.png", "/iphone2.png"];
+  const thumbnails = item?.images && item.images.length > 0 ? item.images : [];
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      // Save current item in localStorage as draft
+      if (item) {
+        localStorage.setItem("draftItem", JSON.stringify(item));
+      }
+    };
+
+    router.events?.on("routeChangeStart", handleRouteChange);
+
+    return () => {
+      router.events?.off("routeChangeStart", handleRouteChange);
+    };
+  }, [item, router]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
@@ -84,8 +96,8 @@ export default function HostItem2() {
                 ? "translate-x-0 w-[280px]"
                 : "-translate-x-full w-[280px]"
               : isOpen
-              ? "translate-x-0 w-[300px]"
-              : "translate-x-0 w-[80px]"
+                ? "translate-x-0 w-[300px]"
+                : "translate-x-0 w-[80px]"
           }`}
       >
         <aside className="relative text-black">
@@ -112,15 +124,43 @@ export default function HostItem2() {
           {/* Menu */}
           <ul className="mt-4 space-y-2">
             {[
-              { label: "Dashboard", icon: "/dashboard.png", route: "/admin/dashboard" },
-              { label: "Sellers", icon: "/user_logo.png", route: "/admin/sellers/activeSellers" },
+              {
+                label: "Dashboard",
+                icon: "/dashboard.png",
+                route: "/admin/dashboard",
+              },
+              {
+                label: "Sellers",
+                icon: "/user_logo.png",
+                route: "/admin/sellers/activeSellers",
+              },
               { label: "Items", icon: "/items.svg", route: "/admin/Items" },
               { label: "Users", icon: "/user_logo.png", route: "/admin/users" },
-              { label: "Winners & Fulfillment", icon: "/winners.svg", route: "/admin/winners" },
-              { label: "Weekly Giveaway", icon: "/gift.svg", route: "/admin/giveaway" },
-              { label: "Disputes", icon: "/disputes.svg", route: "/admin/disputes" },
-              { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-              { label: "Manage Banners", icon: "/banners.svg", route: "/admin/banners" },
+              {
+                label: "Winners & Fulfillment",
+                icon: "/winners.svg",
+                route: "/admin/winners",
+              },
+              {
+                label: "Weekly Giveaway",
+                icon: "/gift.svg",
+                route: "/admin/giveaway",
+              },
+              {
+                label: "Disputes",
+                icon: "/disputes.svg",
+                route: "/admin/disputes",
+              },
+              {
+                label: "Revenue Overview",
+                icon: "/revenue.svg",
+                route: "/admin/overview",
+              },
+              {
+                label: "Manage Banners",
+                icon: "/banners.svg",
+                route: "/admin/banners",
+              },
             ].map((navItem, i) => (
               <li
                 key={i}
@@ -132,21 +172,33 @@ export default function HostItem2() {
                   hover:text-white hover:bg-[#F2482D] hover:shadow-[3px_3px_0px_black]
                   ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
               >
-                <Image src={navItem.icon} alt={navItem.label} width={25} height={25} />
-                <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+                <Image
+                  src={navItem.icon}
+                  alt={navItem.label}
+                  width={25}
+                  height={25}
+                />
+                <span
+                  className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+                >
                   {navItem.label}
                 </span>
               </li>
             ))}
 
             <li
-              onClick={() => { handleLogout(); closeSidebar(); }}
+              onClick={() => {
+                handleLogout();
+                closeSidebar();
+              }}
               className={`mt-10 w-full py-3 rounded-xl text-black text-lg flex items-center cursor-pointer
                 hover:text-white hover:bg-[#F2482D] hover:shadow-[3px_3px_0px_black]
                 ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
             >
               <Image src="/logout.png" alt="Logout" width={25} height={25} />
-              <span className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+              <span
+                className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+              >
                 Logout
               </span>
             </li>
@@ -166,15 +218,33 @@ export default function HostItem2() {
             <h1 className="text-3xl login-title">Host Item</h1>
             <div className="flex items-center gap-4">
               <div className="h-15 w-15 flex items-center justify-center rounded-2xl bg-white border border-gray-200 p-2 shadow-[3px_3px_0px_gray] hover:text-gray-800 hover:shadow-[3px_3px_0px_black]">
-                <Image src="/bell.png" alt="Notifications" width={70} height={70} />
+                <Image
+                  src="/bell.png"
+                  alt="Notifications"
+                  width={70}
+                  height={70}
+                />
               </div>
               <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-10 py-3">
-                <Image src="/Avatar.png" alt="Profile Avatar" width={40} height={40} />
+                <Image
+                  src="/Avatar.png"
+                  alt="Profile Avatar"
+                  width={40}
+                  height={40}
+                />
                 <div className="text-left">
-                  <p className="text-sm font-semibold text-gray-800">Arisu Anama</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    Arisu Anama
+                  </p>
                   <p className="text-xs text-gray-500">
                     Administrator
-                    <Image src="/down_icon.png" alt="Dropdown Arrow" width={15} height={15} className="cursor-pointer mr-4 inline-block" />
+                    <Image
+                      src="/down_icon.png"
+                      alt="Dropdown Arrow"
+                      width={15}
+                      height={15}
+                      className="cursor-pointer mr-4 inline-block"
+                    />
                   </p>
                 </div>
               </div>
@@ -185,7 +255,6 @@ export default function HostItem2() {
           <div className="bg-white rounded-xl shadow p-5 text-gray-800 mt-6">
             <div className="bg-white rounded-xl shadow text-gray-800 mt-6 max-w-[1070px]">
               <div className="flex gap-8">
-
                 {/* Left: Large main image + thumbnails */}
                 <div>
                   <img
@@ -210,68 +279,67 @@ export default function HostItem2() {
                 {/* Right: Text info */}
                 <div className="flex-1">
                   {/* ✅ Item Title */}
-                  <h2 className="text-2xl font-extrabold login-title mb-6">
+                  <h2 className="text-lg font-extrabold login-title mb-6">
                     {item?.itemTitle || "—"}
                   </h2>
 
-                  <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-2xl">
+                  <div className="grid grid-cols-2 gap-y-8 gap-x-12 text-sm">
 
                     {/* ✅ Total Spots */}
                     <div>
-                      <p className=" text-gray-600 text-2xl" >Total Spots</p>
-                      <p className="font-semibold text- text-gray-900">
+                      <p className="text-base text-gray-600">Total Spots</p>
+                      <p className="font-semibold text-gray-900">
                         {calc.totalSpots ?? "—"}
                       </p>
                     </div>
 
-                    {/* ✅ Desired Net Payout */}
+                    {/*  Desired Net Payout */}
                     <div>
-                      <p className=" text-gray-600">Desired Net Payout</p>
-                      <p className="font-semibold text-gray-900 text-orange-500">
+                      <p className="text-base text-gray-600">Desired Net Payout</p>
+                      <p className="font-semibold login-title text-xl">
                         ${calc.desiredNetPayout?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
-                    {/* ✅ Total Pot */}
+                    {/*  Total Pot */}
                     <div>
-                      <p className=" text-gray-600">Total Pot</p>
-                      <p className="font-semibold text-gray-900">
+                      <p className="text-base text-gray-600">Total Pot</p>
+                      <p className="text-gray-900">
                         ${calc.totalPot?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
-                    {/* ✅ Ticket Price */}
+                    {/*  Ticket Price */}
                     <div>
-                      <p className=" text-gray-600">Ticket Price</p>
+                      <p className="text-base text-gray-600">Ticket Price</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.ticketPrice?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
-                    {/* ✅ Platform Fee */}
+                    {/*  Platform Fee */}
                     <div>
-                      <p className=" text-gray-600">Platform Fee</p>
+                      <p className="text-base text-gray-600">Platform Fee</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.platformFee?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
-                    {/* ✅ IRS Withholding */}
+                    {/*  IRS Withholding */}
                     <div>
-                      <p className=" text-gray-600">IRS Withholding</p>
+                      <p className="text-base text-gray-600">IRS Withholding</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.irsWithholding?.toLocaleString() ?? "—"}
                       </p>
                     </div>
 
-                    {/* ✅ Processing Fee */}
+                    {/*  Processing Fee */}
                     <div>
-                      <p className=" text-gray-600">Processing Fee</p>
+                      <p className="text-base text-gray-600">Processing Fee</p>
                       <p className="font-semibold text-gray-900">
                         ${calc.processingFee?.toLocaleString() ?? "—"}
                       </p>
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -284,8 +352,9 @@ export default function HostItem2() {
                 <button
                   className="bg-[#F2482D] hover:bg-[#d13e22] shadow-[3px_3px_0px_black] text-white px-8 py-3 rounded-lg text-lg transition"
                   onClick={() => {
-                    localStorage.removeItem("draftItem");
-                    router.push("/admin/Items/hostItem/hostItem2/itemDetailPage");
+                    router.push(
+                      "/admin/Items/hostItem/hostItem2/itemDetailPage",
+                    );
                   }}
                 >
                   Publish →
@@ -293,7 +362,6 @@ export default function HostItem2() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function ProfileImage() {
+export default function HostItem() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -15,39 +15,70 @@ export default function ProfileImage() {
   const [selectTimeline, setSelectTimeline] = useState("");
   const [description, setDescription] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [itemImages, setItemImages] = useState([]); // URLs for item images
+  const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null); // for frontend preview
+  const [imageUrl, setImageUrl] = useState(null);
+  const [previewImages, setPreviewImages] = useState([]);
+  const [itemFiles, setItemFiles] = useState([]);
 
   const handleNext = async () => {
-  if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
-    return alert("Please fill all required fields");
-  }
+    if (!itemTitle || !selectCategory || !desiredNetPayout || !selectTimeline) {
+      return alert("Please fill all required fields");
+    }
 
-  const token = localStorage.getItem("token");
+    setUploading(true);
+    const uploadedImageUrls = [];
 
-  const res = await fetch("http://localhost:5000/host-items", {  
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      itemTitle,
-      selectCategory,
-      desiredNetPayout: Number(desiredNetPayout),
-      selectTimeline,
-      description,
-    }),
-  });
+    try {
+      for (const file of itemFiles) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "host_items_preset");
 
-  const data = await res.json();
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/du4y3qam1/image/upload",
+          { method: "POST", body: formData },
+        );
 
-  if (!data.success) return alert(data.message || "Failed to create item");
+        const data = await res.json();
+        if (data.secure_url) uploadedImageUrls.push(data.secure_url);
+      }
+    } catch (err) {
+      console.error("Image upload failed", err);
+      alert("Failed to upload images");
+      setUploading(false);
+      return;
+    }
 
-  // data.data has _id + calculations — save for page 2
-  localStorage.setItem("draftItem", JSON.stringify(data.data));
+    setUploading(false);
 
-  router.push("/admin/Items/hostItem/hostItem2");
-};
+    // Now send all data including image URLs to backend
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://localhost:5000/host-items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        itemTitle,
+        selectCategory,
+        desiredNetPayout: Number(desiredNetPayout),
+        selectTimeline,
+        description,
+        images: uploadedImageUrls,
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.success) return alert(data.message || "Failed to create item");
+
+    localStorage.setItem("draftItem", JSON.stringify(data.data));
+    router.push("/admin/Items/hostItem/hostItem2");
+  };
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -131,10 +162,22 @@ export default function ProfileImage() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setSelectedImage(data.imageUrl);
-    }
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+
+    // Create preview
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+  };
+
+  const handleItemImageSelection = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPreviewImages((prev) => [...prev, ...newPreviews]);
+    setItemFiles((prev) => [...prev, ...files]); // ✅ now works
   };
 
   return (
@@ -400,34 +443,46 @@ export default function ProfileImage() {
                 Item Images
               </label>
 
-              <div className="flex items-center gap-4">
-                <img
-                  src="/iphone.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
-                <img
-                  src="/iphone2.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
-                <img
-                  src="/iphone3.png"
-                  alt=""
-                  className="w-[120px] h-[120px] object-cover rounded-lg border border-gray-300"
-                />
+              <div className="flex items-center gap-4 flex-wrap">
+                {previewImages.map((url, index) => (
+                  <div key={index} className="relative w-[120px] h-[120px]">
+                    <img
+                      src={url}
+                      alt={`Item ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg border border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreviewImages((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
+                        setItemFiles((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
+                      }}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
 
-                <button
-                  type="button"
-                  className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 transition-colors"
-                >
+                <label className="w-[120px] h-[120px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-red-500 text-sm font-semibold hover:bg-gray-100 hover:text-red-600 cursor-pointer">
                   + Add More
-                </button>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleItemImageSelection}
+                  />
+                </label>
               </div>
             </div>
 
             {/* Image Upload */}
-            <div className="flex flex-col items-center gap-4">
+            
+            {/* <div className="flex flex-col items-center gap-4">
               <form
                 onSubmit={handleProfileImageUpload}
                 className="flex items-center justify-between gap-4 bg-gray-200 p-3 rounded-lg w-full max-w-md"
@@ -437,7 +492,7 @@ export default function ProfileImage() {
                   name="image"
                   onChange={handleFileChange} // preview handler
                   className="flex-1 text-sm text-gray-700
-                     file:mr-4 file:py-2 file:px-4
+                     file:mr-4 file:py-2 file:px-4  
                      file:rounded-md file:border-0
                      file:text-sm file:font-semibold
                      file:bg-gray-300 file:text-gray-800
@@ -453,18 +508,15 @@ export default function ProfileImage() {
                 </button>
               </form>
 
-              {/* Image preview */}
-              {selectedImage && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className="max-w-xs max-h-60 object-contain border-none rounded-md"
-                  />
-                </div>
+              {/* Image preview */} {/* 
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="max-w-xs max-h-60 object-contain rounded-md"
+                />
               )}
-            </div>
+            </div> */}
 
             <div className="flex justify-end mt-6">
               <button
