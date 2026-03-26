@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ReactNode, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -13,6 +13,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [openAttachment, setOpenAttachment] = useState(null);
   interface Seller {
+    email: ReactNode;
+    name: ReactNode;
     id: string;
     _id: string;
     userId: {
@@ -85,7 +87,7 @@ export default function DashboardPage() {
     localStorage.removeItem("token");
     router.push("/login");
   };
-  const handleOpen = (attachment) => {
+  const handleOpen = (attachment: string | SetStateAction<null> | undefined) => {
     setOpenAttachment(attachment);
   };
 
@@ -372,13 +374,13 @@ export default function DashboardPage() {
                 >
                   <p>{seller.name}</p>
                   <p>{seller.email}</p>
-                  <p>{new Date(seller.createdAt).toLocaleDateString()} </p>
+                  <p>{new Date(seller.createdAt).toLocaleDateString()}</p>
 
                   <div className="flex gap-2">
                     {seller.attachment?.govtIdFront && (
                       <button
                         onClick={() =>
-                          handleOpen(seller.attachment.govtIdFront)
+                          handleOpen(seller.attachment?.govtIdFront)
                         }
                         className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
                       >
@@ -388,7 +390,7 @@ export default function DashboardPage() {
 
                     {seller.attachment?.govtIdBack && (
                       <button
-                        onClick={() => handleOpen(seller.attachment.govtIdBack)}
+                        onClick={() => handleOpen(seller.attachment?.govtIdBack)}
                         className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
                       >
                         ID Back
@@ -398,7 +400,7 @@ export default function DashboardPage() {
                     {seller.attachment?.selfieWithId && (
                       <button
                         onClick={() =>
-                          handleOpen(seller.attachment.selfieWithId)
+                          handleOpen(seller.attachment?.selfieWithId)
                         }
                         className="px-3 py-1 text-xs rounded-lg bg-[#FFF5F2] border border-gray-300 hover:bg-gray-200"
                       >

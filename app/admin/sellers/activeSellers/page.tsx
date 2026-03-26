@@ -9,13 +9,15 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
-useEffect(() => {
+  const [activeSellers, setActiveSellers] = useState([]);
+
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!user || user.role !== "admin") {
-        router.push("/login");
+      router.push("/login");
     }
-}, []);
+  }, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -39,6 +41,23 @@ useEffect(() => {
     localStorage.removeItem("token");
     router.push("/login");
   };
+
+  useEffect(() => {
+    // Fetch active sellers from dashboard API
+    const fetchActiveSellers = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/admin/sellers?status=Approved",
+        );
+        const data = await res.json();
+        setActiveSellers(data.sellers || []);
+      } catch (err) {
+        console.error("Failed to fetch active sellers:", err);
+      }
+    };
+
+    fetchActiveSellers();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex relative">
@@ -99,12 +118,32 @@ useEffect(() => {
                 route: "/admin/sellers/activeSellers",
               },
               { label: "Items", icon: "/items.svg", route: "/admin/Items" },
-              { label: "Users", icon: "/user_logo.png",route:"/admin/users"  },
-              { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/admin/winners" },
-              { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway" },
-              { label: "Disputes", icon: "/disputes.svg" , route: "/admin/disputes"},
-              { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-              { label: "Manage Banners", icon: "/banners.svg"  , route: "/admin/banners"},
+              { label: "Users", icon: "/user_logo.png", route: "/admin/users" },
+              {
+                label: "Winners & Fulfillment",
+                icon: "/winners.svg",
+                route: "/admin/winners",
+              },
+              {
+                label: "Weekly Giveaway",
+                icon: "/gift.svg",
+                route: "/admin/giveaway",
+              },
+              {
+                label: "Disputes",
+                icon: "/disputes.svg",
+                route: "/admin/disputes",
+              },
+              {
+                label: "Revenue Overview",
+                icon: "/revenue.svg",
+                route: "/admin/overview",
+              },
+              {
+                label: "Manage Banners",
+                icon: "/banners.svg",
+                route: "/admin/banners",
+              },
             ].map((item, i) => (
               <li
                 key={i}
@@ -216,9 +255,7 @@ useEffect(() => {
 
               <button
                 className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() =>
-                  router.push("/admin/sellers/pendingApprovels")
-                }
+                onClick={() => router.push("/admin/sellers/pendingApprovels")}
               >
                 Pending Approval
               </button>
@@ -259,7 +296,7 @@ useEffect(() => {
 
           <div className="w-full bg-white mt-10 rounded-xl shadow-md p-6">
             {/* Table Header */}
-            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
+            <div className="grid grid-cols-7 bg-[#FFF5F2] px-5 py-3 rounded-lg  font-semibold text-gray-700">
               <p>Sr No.</p>
               <p>Seller Name</p>
               <p>Email</p>
@@ -271,34 +308,42 @@ useEffect(() => {
 
             {/* Table Rows */}
             <div className="mt-3">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+              {activeSellers.map((seller, index) => (
                 <div
-                  key={index}
-                  className="grid grid-cols-7 px-5 py-4 text-sm text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
+                  key={seller._id}
+                  className="grid grid-cols-7 px-5 py-4  text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                 >
-                  <p>12345</p>
-                  <p>Name of Item</p>
-                  <p>jan24@example.com</p>
-                  <p>January 24, 2025</p>
-                  <p>34</p>
-                  <p>7 days</p>
-
+                  <p>{index + 1}</p>
+                  <p>{seller.name}</p>
+                  <p>{seller.email}</p>
+                  <p>{new Date(seller.joined).toLocaleDateString()}</p>
+                  <p>{seller.itemsListed}</p>
+                  <p>-</p> {/* Timeline can be empty or computed if needed */}
                   <div className="flex justify-center">
                     <button
                       className="bg-blue-500 text-white px-3 py-1 rounded-md"
-                      onClick={() => router.push("/admin/sellers/activeSellers/activeDetail")}
+                      onClick={() =>
+                        router.push(
+                          `/admin/sellers/activeSellers/activeDetail/${seller._id}`,
+                        )
+                      }
                     >
                       👁
                     </button>
                   </div>
                 </div>
               ))}
+
+              {activeSellers.length === 0 && (
+                <p className="text-center text-gray-500 py-4">
+                  No active sellers found.
+                </p>
+              )}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination (optional, static example) */}
             <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
               <p>Page 1 of 10</p>
-
               <div className="flex gap-3">
                 <button className="border px-4 py-2 rounded-md">
                   Previous

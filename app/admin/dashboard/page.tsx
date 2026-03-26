@@ -324,8 +324,8 @@ export default function DashboardPage() {
 
               <div className="max-h-96 overflow-y-auto">
                 <table className="w-full text-lg ">
-                  <thead className="text-black">
-                    <tr className="">
+                  <thead className="text-black bg-[#FFF6F6] sticky top-0">
+                    <tr className="text-gray-500 ">
                       <th className="text-left py-2">Sr No.</th>
                       <th className="text-left py-2">Items</th>
                       <th className="text-left py-2">Start Date</th>
@@ -383,7 +383,10 @@ export default function DashboardPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5" className="text-center py-4">
+                        <td
+                          colSpan="5"
+                          className="text-center py-4 text-gray-500"
+                        >
                           No active items
                         </td>
                       </tr>
@@ -398,42 +401,48 @@ export default function DashboardPage() {
                 Recent Winners
               </h2>
 
-              <div className="max-h-96 overflow-y-auto bg-gray-50 ">
-                <ul className="text-black text-lg grid gap-y-3">
-                  {winners.map((winner, i) => {
-                    const getOrdinal = (n) => {
-                      const s = ["th", "st", "nd", "rd"],
-                        v = n % 100;
-                      return n + (s[(v - 20) % 10] || s[v] || s[0]);
-                    };
+              <div className="max-h-96 overflow-y-auto bg-gray-50">
+                {winners.length === 0 ? (
+                  <p className="text-black text-lg text-center py-5">
+                    No winners yet
+                  </p>
+                ) : (
+                  <ul className="text-black text-lg grid gap-y-3">
+                    {winners.map((winner, i) => {
+                      const getOrdinal = (n) => {
+                        const s = ["th", "st", "nd", "rd"],
+                          v = n % 100;
+                        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+                      };
 
-                    return (
-                      <li
-                        key={i}
-                        className="grid grid-cols-[50px_1fr_50px] items-center"
-                      >
-                        <span>{getOrdinal(i + 1)}</span>
-                        <span>{winner.name}</span>
+                      return (
+                        <li
+                          key={i}
+                          className="grid grid-cols-[50px_1fr_50px] items-center"
+                        >
+                          <span>{getOrdinal(i + 1)}</span>
+                          <span>{winner.name}</span>
 
-                        <button className="w-9 h-9 bg-[#497BC6] text-white rounded-lg">
-                          <Image
-                            src="/eyeC.png"
-                            alt="View"
-                            width={21}
-                            height={21}
-                          />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
+                          <button className="w-9 h-9 bg-[#497BC6] text-white rounded-lg">
+                            <Image
+                              src="/eyeC.png"
+                              alt="View"
+                              width={21}
+                              height={21}
+                            />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white p-5 rounded-xl shadow">
-              <h2 className="font-bold text-gray-300 text-lg mb-4 login-title">
+              <h2 className="font-bold text-gray-300 text-lg mb-4  login-title">
                 Items Sold
               </h2>
 

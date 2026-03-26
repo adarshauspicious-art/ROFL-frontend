@@ -9,13 +9,53 @@ export default function DashboardPage() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
-useEffect(() => {
+  const [blockedSellers, setBlockedSellers] = useState<Seller[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  interface Seller {
+    _id: string;
+    name: string;
+    email: string;
+    blockedAt: string;
+    adminNotes?: string;
+  }
+
+  useEffect(() => {
+    const fetchBlockedSellers = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/admin/sellers?status=Rejected", // query param
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+          },
+        );
+
+        const data = await res.json();
+        setSellers(data.sellers); // adjust based on your API response
+      } catch (err) {
+        console.error("Error fetching blocked sellers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlockedSellers();
+  }, []);
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!user || user.role !== "admin") {
-        router.push("/login");
+      router.push("/login");
     }
-}, []);
+  }, []);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login");
@@ -28,13 +68,39 @@ useEffect(() => {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const toggleSidebar = () => setIsOpen(prev => !prev);
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
   const closeSidebar = () => isMobile && setIsOpen(false);
 
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/logout", { method: "POST", credentials: "include" });
+    await fetch("http://localhost:5000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
     localStorage.removeItem("token");
     router.push("/login");
+  };
+
+  const handleUnblock = async (id: string) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admin/sellers/${id}/unblock`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Seller unblocked successfully");
+        setBlockedSellers((prev) => prev.filter((s) => s._id !== id));
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   return (
@@ -51,17 +117,17 @@ useEffect(() => {
       <div
         className={`fixed top-0 left-0 h-screen bg-white p-2 shadow-lg rounded-r-2xl border border-gray-300 z-50
         transition-transform duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)]
-        ${isMobile
+        ${
+          isMobile
             ? isOpen
               ? "translate-x-0 w-[280px]"
               : "-translate-x-full w-[280px]"
             : isOpen
               ? "translate-x-0 w-[300px]"
               : "translate-x-0 w-[80px]"
-          }`}
+        }`}
       >
         <aside className="relative text-black">
-
           {/* Header */}
           <div className="flex items-center justify-between mb-6 mt-2 mr-2">
             <Image
@@ -85,15 +151,43 @@ useEffect(() => {
           {/* Menu */}
           <ul className="mt-4 space-y-2">
             {[
-              { label: "Dashboard", icon: "/dashboard.png", route: "/admin/dashboard" },
-              { label: "Sellers", icon: "/user_logo.png", route: "/admin/sellers/activeSellers"  },
+              {
+                label: "Dashboard",
+                icon: "/dashboard.png",
+                route: "/admin/dashboard",
+              },
+              {
+                label: "Sellers",
+                icon: "/user_logo.png",
+                route: "/admin/sellers/activeSellers",
+              },
               { label: "Items", icon: "/items.svg", route: "/admin/Items" },
-              { label: "Users", icon: "/user_logo.png" ,route:"/admin/users" },
-              { label: "Winners & Fulfillment", icon: "/winners.svg",route:"/admin/winners" },
-              { label: "Weekly Giveaway", icon: "/gift.svg",route:"/admin/giveaway" },
-              { label: "Disputes", icon: "/disputes.svg", route: "/admin/disputes" },
-              { label: "Revenue Overview", icon: "/revenue.svg", route: "/admin/overview" },
-              { label: "Manage Banners", icon: "/banners.svg"  , route: "/admin/banners"},
+              { label: "Users", icon: "/user_logo.png", route: "/admin/users" },
+              {
+                label: "Winners & Fulfillment",
+                icon: "/winners.svg",
+                route: "/admin/winners",
+              },
+              {
+                label: "Weekly Giveaway",
+                icon: "/gift.svg",
+                route: "/admin/giveaway",
+              },
+              {
+                label: "Disputes",
+                icon: "/disputes.svg",
+                route: "/admin/disputes",
+              },
+              {
+                label: "Revenue Overview",
+                icon: "/revenue.svg",
+                route: "/admin/overview",
+              },
+              {
+                label: "Manage Banners",
+                icon: "/banners.svg",
+                route: "/admin/banners",
+              },
             ].map((item, i) => (
               <li
                 key={i}
@@ -107,8 +201,15 @@ useEffect(() => {
                 hover:shadow-[3px_3px_0px_black]
                 ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
               >
-                <Image src={item.icon} alt={item.label} width={25} height={25} />
-                <span className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+                <Image
+                  src={item.icon}
+                  alt={item.label}
+                  width={25}
+                  height={25}
+                />
+                <span
+                  className={`whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+                >
                   {item.label}
                 </span>
               </li>
@@ -125,26 +226,26 @@ useEffect(() => {
               ${isOpen ? "gap-2 px-3" : "justify-center px-0"}`}
             >
               <Image src="/logout.png" alt="Logout" width={25} height={25} />
-              <span className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}>
+              <span
+                className={`transition-all duration-300 ${isOpen ? "opacity-100 ml-2" : "opacity-0 w-0 overflow-hidden"}`}
+              >
                 Logout
               </span>
             </li>
           </ul>
-
         </aside>
       </div>
 
       {/* Main Content */}
       <div
-        className={`flex-1 flex  justify-center transition-all duration-500 ${!isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
-          }`}
+        className={`flex-1 flex  justify-center transition-all duration-500 ${
+          !isMobile ? (isOpen ? "ml-[300px]" : "ml-[80px]") : "ml-0"
+        }`}
       >
         <div className="w-full  ">
           <div className="flex items-center justify-between bg-[#FFF5F2] px-6 py-4 rounded-xl">
             {/* Left Title */}
-            <h1 className="text-3xl login-title">
-              Sellers
-            </h1>
+            <h1 className="text-3xl login-title">Sellers</h1>
 
             {/* Right Section */}
             <div className="flex items-center gap-4  ">
@@ -181,7 +282,6 @@ useEffect(() => {
                     />
                   </p>
                 </div>
-
               </div>
             </div>
           </div>
@@ -190,22 +290,27 @@ useEffect(() => {
 
           <div className="w-full w-full inline-flex gap-6">
             <div className="w-full inline-flex gap-6 ml-5 h-20 ">
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/admin/sellers/activeSellers")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/admin/sellers/activeSellers")}
+              >
                 Active Sellers
               </button>
 
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/admin/sellers/pendingApprovels")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/admin/sellers/pendingApprovels")}
+              >
                 Pending Approval
               </button>
 
-              <button className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
-                onClick={() => router.push("/admin/sellers/blockedSellers")}>
+              <button
+                className="mt-4 w-50 text-gray-700 bg-white hover:bg-[#F2482D] py-3 rounded-xl border border-black transition font-semibold flex    items-center justify-center gap-2 shadow-[3px_3px_0px_gray] hover:text-white hover:shadow-[3px_3px_0px_black]"
+                onClick={() => router.push("/admin/sellers/blockedSellers")}
+              >
                 Blocked Sellers
               </button>
             </div>
-
 
             <div className="relative mt-4 mr-5 w-max-full ">
               {/* Search Icon */}
@@ -234,43 +339,48 @@ useEffect(() => {
           {/* Sellers List Section */}
 
           <div className="w-full bg-white mt-10 rounded-xl shadow-md p-6">
-
             {/* Table Header */}
             <div className="grid grid-cols-5 bg-[#FFF5F2] px-5 py-3 rounded-lg text-sm font-semibold text-gray-700">
-              
               <p>Seller Name</p>
               <p>Email</p>
               <p>Blocked On</p>
               <p>Admin Notes</p>
-              
+
               <p className="text-center ">Action</p>
             </div>
 
             {/* Table Rows */}
             <div className="mt-3">
-
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+              {sellers.map((seller, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-5 px-5 py-4 text-sm text-gray-600 border-b border-gray-200 hover:bg-gray-100 items-center"
                 >
-                  
-                  <p>Name of Item</p>
-                  <p>jan24@example.com</p>
-                  <p>January 24, 2025</p>
-                  <p>Inappropriate content and policy violations reported here</p>
-                  
-                  
+                  <p>{seller.name}</p>
+                  <p>{seller.email}</p>
+                  <p>{new Date(seller.blockedOn).toLocaleDateString()}</p>
+                  <p>{seller.adminNotes}</p>
 
                   <div className="flex justify-center gap-5">
-                    <p className="underline text-blue-500 "> Unblock </p>
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md" onClick={()=> router.push("/admin/sellers/blockedSellers/blockedDetails")}>
+                    <button
+                      className="underline text-blue-500"
+                      onClick={() => handleStatusChange(seller.id, "Approved")} // or "Unblock" logic
+                    >
+                      Unblock
+                    </button>
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md"
+                      onClick={() =>
+                        router.push(
+                          `/admin/sellers/blockedSellers/${seller.id}`,
+                        )
+                      }
+                    >
                       👁
                     </button>
                   </div>
                 </div>
               ))}
-
             </div>
 
             {/* Pagination */}
@@ -286,11 +396,7 @@ useEffect(() => {
                 </button>
               </div>
             </div>
-
           </div>
-
-
-
         </div>
       </div>
     </div>
