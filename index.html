@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stripe Test Payment</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    #card-element { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    #pay-button { margin-top: 10px; padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h2>Test Payment</h2>
+  <div id="card-element"></div>
+  <button id="pay-button">Pay $50</button>
+  <p id="payment-message"></p>
+
+  <script>
+    // 1️⃣ Initialize Stripe with your publishable key
+    const stripe = Stripe("pk_test_51TGaeXGwOksEfy9xsCN3f7slrx7ETHitLcl2iu9x7A9bzwFm2QOnHBSwzHk0w5kGQJvpor1dK6ARyRn56HpjeHWy0092DzaP3e");
+
+    // 2️⃣ Create Stripe Elements
+    const elements = stripe.elements();
+    const cardElement = elements.create("card");
+    cardElement.mount("#card-element");
+
+    // 3️⃣ Handle payment on button click
+    document.getElementById("pay-button").addEventListener("click", async () => {
+      document.getElementById("payment-message").textContent = "Processing payment...";
+      
+      // 4️⃣ Call your backend to create PaymentIntent
+      const response = await fetch("http://localhost:5000/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 5000 }) // $50
+      });
+      const data = await response.json();
+      const clientSecret = data.clientSecret;
+
+      // 5️⃣ Confirm the payment
+      const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: { name: "Test User" },
+        },
+      });
+
+      if (error) {
+        document.getElementById("payment-message").textContent = "Payment failed: " + error.message;
+      } else if (paymentIntent.status === "succeeded") {
+        document.getElementById("payment-message").textContent = "Payment succeeded!";
+      }
+    });
+  </script>
+</body>
+</html>
