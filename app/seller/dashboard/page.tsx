@@ -11,11 +11,17 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+interface Seller {
+  itemTitle?: string;
+  status?: string;
+  [key: string]: any;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [seller, setSeller] = useState(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -262,15 +268,15 @@ export default function DashboardPage() {
               },
               {
                 title: "Active Listings",
-                value: "38",
+                value: "0",
               },
               {
                 title: "Sold Out",
-                value: "3",
+                value: "0",
               },
               {
                 title: "Total Earned",
-                value: "$10,000",
+                value: "$ 0",
               },
             ].map((card, i) => (
               <div key={i} className="relative bg-white p-5 rounded-xl border">
@@ -308,7 +314,7 @@ export default function DashboardPage() {
                         className="border-t text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
                       >
                         <td className="py-3">{i + 1}</td>
-                        <td>Name of Item</td>
+                        <td>{seller?.itemTitle}</td>
                         <td>Jan 24, 2025</td>
                         <td>7 days</td>
                         <td className="flex justify-center gap-3 py-3">

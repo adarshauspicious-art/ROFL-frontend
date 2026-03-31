@@ -441,6 +441,7 @@ export default function ProfileImage() {
               onChange={(e) => setDescription(e.target.value)}
               className="border rounded-lg p-3 w-full mt-4 border border-gray-300"
               rows={4}
+              required
             />
             <div className="mt-4">
               <label className="block text-sm font-semibold mb-2 text-gray-700">

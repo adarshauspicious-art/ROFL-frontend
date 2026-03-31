@@ -41,7 +41,7 @@ export default function OnBoarding() {
       console.log("Response from server:", response);
 
       if (res.ok) {
-        // ✅ Mark seller profile as completed in localStorage
+        //  Mark seller profile as completed in localStorage
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         user.profileCompleted = true;
         localStorage.setItem("user", JSON.stringify(user));

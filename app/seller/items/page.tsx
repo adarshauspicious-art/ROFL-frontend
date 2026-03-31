@@ -8,12 +8,12 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [query, setQuery] = useState("");
+  const [items, setItems] = useState<any[]>([]); // API-fetched items
+  const [query, setQuery] = useState(""); // search input
   const [seller, setSeller] = useState<{
-    status: string; profileCompleted?: boolean 
-} | null>(
-    null,
-  );
+    status: string;
+    profileCompleted?: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,7 +44,10 @@ export default function DashboardPage() {
     localStorage.removeItem("token");
     router.push("/login");
   };
-
+  // This should be right before your return(...)
+const filteredItems = items.filter((item) =>
+  item.name.toLowerCase().includes(query.toLowerCase())
+);
   return (
     <div className="min-h-screen bg-gray-100 flex relative overflow-x-hidden">
       {/* Overlay for mobile */}
@@ -271,33 +274,33 @@ export default function DashboardPage() {
 
             {/* Host Item Button */}
             <button
-  className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-[#F2482D] transition shadow-[3px_3px_0px_gray] hover:shadow-[3px_3px_0px_black]"
-  onClick={() => {
-    // Check if seller exists
-    if (!seller) {
-      alert("Seller information not loaded!");
-      return;
-    }
+              className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-[#F2482D] transition shadow-[3px_3px_0px_gray] hover:shadow-[3px_3px_0px_black]"
+              onClick={() => {
+                // Check if seller exists
+                if (!seller) {
+                  alert("Seller information not loaded!");
+                  return;
+                }
 
-    // Check if profile is completed
-    if (!seller.profileCompleted) {
-      alert("Please complete your profile first!");
-      router.push("/seller/onBoarding");
-      return;
-    }
+                // Check if profile is completed
+                if (!seller.profileCompleted) {
+                  alert("Please complete your profile first!");
+                  router.push("/seller/onBoarding");
+                  return;
+                }
 
-    // Check if seller is approved
-    if (seller.status !== "Approved") {
-      alert("Your account is not approved by admin yet!");
-      return;
-    }
+                // Check if seller is approved
+                if (seller.status !== "Approved") {
+                  alert("Your account is not approved by admin yet!");
+                  return;
+                }
 
-    // All checks passed → allow hosting
-    router.push("/seller/items/hostItem");
-  }}
->
-  Host Item
-</button>
+                // All checks passed → allow hosting
+                router.push("/seller/items/hostItem");
+              }}
+            >
+              Host Item
+            </button>
           </div>
 
           {/* Sellers List Section */}
